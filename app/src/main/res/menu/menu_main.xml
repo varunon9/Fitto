@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="me.varunon9.fito.MainActivity">
+    <item
+        android:id="@+id/action_play"
+        android:orderInCategory="100"
+        android:title="@string/action_play"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="200"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_instructions"
+        android:orderInCategory="300"
+        android:title="@string/action_instructions"
+        app:showAsAction="never" />
+</menu>

@@ -1,0 +1,41 @@
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="Sound and Vibration">
+
+        <CheckBoxPreference
+            android:key="sound_checkbox_preference"
+            android:title="Use Sound"
+            android:summary="Use sound for action"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="vibration_checkbox_preference"
+            android:title="Use vibration"
+            android:summary="Use vibration for action"
+            android:defaultValue="true"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Additional Settings">
+
+        <CheckBoxPreference
+            android:key="computer_play_first_checkbox_preference"
+            android:title="Computer plays first"
+            android:summary="Computer first starts move"
+            android:defaultValue="true"/>
+
+        <ListPreference
+            android:key="game_level_list_preference"
+            android:title="Choose level"
+            android:summary="Level of game you want to choose"
+            android:entries="@array/entries_game_level_list_preference"
+            android:entryValues="@array/entries_game_level_list_preference_values"
+            android:dialogTitle="Choose level"
+            android:defaultValue="0"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

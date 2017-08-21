@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Fito</string>
+    <string name="action_play">Play</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_instructions">Instructions</string>
+
+    <string-array name="entries_game_level_list_preference">
+        <item>Easy</item>
+        <item>Medium</item>
+        <item>Hard</item>
+    </string-array>
+    <string-array name="entries_game_level_list_preference_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+</resources>
