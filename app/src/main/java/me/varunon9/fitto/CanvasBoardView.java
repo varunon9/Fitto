@@ -1,7 +1,7 @@
-package me.varunon9.fito;
+package me.varunon9.fitto;
 
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,59 +17,92 @@ import android.view.View;
 
 public class CanvasBoardView extends View {
 
-    private Paint paint;
-    private Path path;
-    Context context;
+    private Paint userStonePaint;
+    private Paint computerStonePaint;
+    private Paint boardPaint;
+    private Path boardPath;
+    private Paint textPaint;
+    private Context context;
     private Canvas mCanvas;
-    //private Bitmap mBitmap;
     private Junction junctionsArray[];
-    private final String playerUser = "user";
-    private final String playerComputer = "computer";
-    private final String computerStoneColor = "#303F9F";
-    private final String userStoneColor = "#9C27B0";
-
-    // global variables for playing game
-    private int userStonesLeft = 9;
-    private int computerStonesLeft = 9;
+    private String playerUser;
+    private String playerComputer;
+    private String computerStoneColor;
+    private String userStoneColor;
+    private int maximumInitialStones;
+    private int userStonesLeft;
+    private int computerStonesLeft;
+    private int canvasMargin;
+    private int stoneRadius;
     private boolean userTurn = false;
+    private String displayMessage;
+    private final String pickStoneMessage = "Pick a stone";
+    private final String placeStoneMessage = "Place the picked stone";
+    private int computerScore = 0;
+    private int userScore = 0;
+    private boolean gameWon = false;
 
     // innerMost square has side 2 * unitLength;
     // initialised while building junctionsArray
     private int unitLength;
 
-    // value of margin and radius (stone circle)
-    private final int marginOrRadius = 20;
+    private void init(Context context, AttributeSet attrs) {
+        TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs,
+                R.styleable.CanvasBoardView, 0, 0);
+        playerUser = typedArray.getString(R.styleable.CanvasBoardView_playerUser);
+        playerComputer = typedArray.getString(R.styleable.CanvasBoardView_playerComputer);
+        computerStoneColor = typedArray.getString(R.styleable.CanvasBoardView_computerStoneColor);
+        userStoneColor = typedArray.getString(R.styleable.CanvasBoardView_userStoneColor);
+        maximumInitialStones =
+                typedArray.getInt(R.styleable.CanvasBoardView_maximumInitialStones, 8);
+        stoneRadius = typedArray.getInt(R.styleable.CanvasBoardView_stoneRadius, 20);
+        canvasMargin = typedArray.getInt(R.styleable.CanvasBoardView_margin, 20);
+        this.context = context;
+        userStonePaint = new Paint();
+        userStonePaint.setAntiAlias(true);
+        userStonePaint.setDither(true);
+        userStonePaint.setColor(Color.parseColor(userStoneColor));
+        userStonePaint.setStrokeWidth(stoneRadius);
 
-    private void init() {
-        paint = new Paint();
-        path = new Path();
-        paint.setAntiAlias(true);
-        paint.setDither(true);
-        paint.setColor(ContextCompat.getColor(context, R.color.colorAccent));
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setStrokeWidth(3);
+        computerStonePaint = new Paint();
+        computerStonePaint.setAntiAlias(true);
+        computerStonePaint.setDither(true);
+        computerStonePaint.setColor(Color.parseColor(computerStoneColor));
+        computerStonePaint.setStrokeWidth(stoneRadius);
+
+        boardPaint = new Paint();
+        boardPaint.setAntiAlias(true);
+        boardPaint.setDither(true);
+        boardPaint.setColor(ContextCompat.getColor(context, R.color.colorAccent));
+        boardPaint.setStyle(Paint.Style.STROKE);
+        boardPaint.setStrokeJoin(Paint.Join.ROUND);
+        boardPaint.setStrokeWidth(3);
+
+
+        boardPath = new Path();
+
+        textPaint = new Paint();
+        textPaint.setAntiAlias(true);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setTextSize(2 * canvasMargin);
+        textPaint.setColor(Color.parseColor(computerStoneColor));
+
+        userStonesLeft = maximumInitialStones;
+        computerStonesLeft = maximumInitialStones;
+        displayMessage = getUserStoneBalanceMessage();
+
+        typedArray.recycle();
 
         // 24 junctions starting from 1 to 24
         junctionsArray = new Junction[25];
     }
 
-    public CanvasBoardView(Context context) {
-        super(context);
-        this.context = context;
-        init();
-    }
-
     public CanvasBoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.context = context;
-        init();
-    }
 
-    public CanvasBoardView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        this.context = context;
-        init();
+        // disable hardware acceleration
+        this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        init(context, attrs);
     }
 
     @Override
@@ -95,20 +128,23 @@ public class CanvasBoardView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        /*mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        mCanvas = new Canvas(mBitmap);*/
 
         // build junctionsArray
-        buildJunctionsArray(junctionsArray, w, h, marginOrRadius);
+        buildJunctionsArray(junctionsArray, w, h, canvasMargin);System.out.println("on size called");
+
+        // first move by computer
+        // todo check settings
+        playComputer();
 
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(Canvas canvas) {System.out.println("on Draw called");
         super.onDraw(canvas);
         mCanvas = canvas;
         drawBoard(canvas, junctionsArray);
         placeStones(junctionsArray, canvas);
+        drawMessage();
     }
 
     /**
@@ -187,32 +223,32 @@ public class CanvasBoardView extends View {
                 start = 17;
             }
 
-            path.moveTo(junctionsArray[start].getX(), junctionsArray[start].getY());
+            boardPath.moveTo(junctionsArray[start].getX(), junctionsArray[start].getY());
 
             int x, y;
             for (int j = 1; j < 8; j++) {
                 x = junctionsArray[start + j].getX();
                 y = junctionsArray[start + j].getY();
-                path.lineTo(x, y);
+                boardPath.lineTo(x, y);
             }
 
             // complete square by reaching to starting point
-            path.lineTo(junctionsArray[start].getX(), junctionsArray[start].getY());
+            boardPath.lineTo(junctionsArray[start].getX(), junctionsArray[start].getY());
         }
 
         // drawing lines intersecting all three squares (on corners)
         for (int i = 1; i <= 7; i += 2) {
-            path.moveTo(junctionsArray[i].getX(), junctionsArray[i].getY());
-            path.lineTo(junctionsArray[i + 16].getX(), junctionsArray[i + 16].getY());
+            boardPath.moveTo(junctionsArray[i].getX(), junctionsArray[i].getY());
+            boardPath.lineTo(junctionsArray[i + 16].getX(), junctionsArray[i + 16].getY());
         }
 
         // drawing lines intersecting all three squares (on mid)
         for (int i = 2; i <= 8; i += 2) {
-            path.moveTo(junctionsArray[i].getX(), junctionsArray[i].getY());
-            path.lineTo(junctionsArray[i + 16].getX(), junctionsArray[i + 16].getY());
+            boardPath.moveTo(junctionsArray[i].getX(), junctionsArray[i].getY());
+            boardPath.lineTo(junctionsArray[i + 16].getX(), junctionsArray[i + 16].getY());
         }
 
-        canvas.drawPath(path, paint);
+        canvas.drawPath(boardPath, boardPaint);
 
     }
 
@@ -315,37 +351,41 @@ public class CanvasBoardView extends View {
             int x = junctionsArray[i].getX();
             int y = junctionsArray[i].getY();
             if (occupiedBy.equals(playerUser)) {
-                drawStone(canvas, x, y, userStoneColor);
+                drawUserStone(canvas, x, y);
             } else if (occupiedBy.equals(playerComputer)) {
-                drawStone(canvas, x, y, computerStoneColor);
+                drawComputerStone(canvas, x, y);
             }
         }
     }
 
-    private void drawStone(Canvas canvas, int x, int y, String color) {
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setColor(Color.parseColor(color));
-        drawStone(canvas, x, y, paint);
+    private void drawComputerStone(Canvas canvas, int x, int y) {
+        drawStone(canvas, x, y, computerStonePaint);
+    }
 
+    private void drawUserStone(Canvas canvas, int x, int y) {
+        drawStone(canvas, x, y, userStonePaint);
     }
 
     private void drawStone(Canvas canvas, int x, int y, Paint paint) {
-        paint.setStrokeWidth(marginOrRadius);
-        canvas.drawCircle(x, y, marginOrRadius, paint);
+        canvas.drawCircle(x, y, stoneRadius, paint);System.out.println(canvas);
     }
 
     private void userTouchesBoard(float x, float y) {
 
+        // game is over
+        if (gameWon) {
+            return;
+        }
+
         // we don't care if it's computer's turn and user is touching board
-        /*if (!userTurn) {
+        if (!userTurn) {
             return;
         } else {
             userTurn = false;
-        }*/
+        }
 
         // finding corresponding junction from junctionsArray
-        int junction = -1;
+        int junctionNo = -1;
         float proximityThreshold = unitLength / 2;
         int xCord = 0;
         int yCord = 0;
@@ -354,17 +394,67 @@ public class CanvasBoardView extends View {
             yCord = junctionsArray[i].getY();
             if ((Math.abs(xCord - x) < proximityThreshold) &&
                     (Math.abs(yCord - y) < proximityThreshold)) {
-                junction = i;
+                junctionNo = i;
                 break;
             }
         }
 
         // if no junction found, i.e. user touched somewhere else
-        if (junction < 0) {
+        if (junctionNo < 0) {
             return;
         }
-        System.out.println(xCord + ": " + yCord + ", " + junction);
-        //drawStone(mCanvas, xCord, yCord, userStoneColor);
+
+        Junction junction = junctionsArray[junctionNo];
+        String occupiedBy = junction.getOccupiedBy();
+        if (occupiedBy == null) {
+            // valid position, user can draw stone
+            junction.setOccupiedBy(playerUser);
+            userStonesLeft --;
+            displayMessage = getUserStoneBalanceMessage();
+        }
+
+        // updating game
+        invalidate();
+
+        playComputer();
+    }
+
+    private void drawMessage() {
+        int width = mCanvas.getWidth();
+        int height = mCanvas.getHeight();
+        int outerSquareSideLength = 6 * unitLength;
+        int x = width / 2;
+        int y = outerSquareSideLength +
+                (height - canvasMargin - outerSquareSideLength) / 2;
+        y = y - (int) (textPaint.ascent() + textPaint.descent()) / 2;
+        mCanvas.drawText(displayMessage, x, y, textPaint);
+    }
+
+    private String getUserStoneBalanceMessage() {
+        return "Your Turn, Stones Left: " + userStonesLeft;
+    }
+
+    private String getComputerStoneBalanceMessage() {
+        return "Computer's Turn, Stones Left: " + computerStonesLeft;
+    }
+
+    private void playComputer() {
+
+        // game is over
+        if (gameWon) {
+            return;
+        }
+
+        if (computerStonesLeft > 0) {
+            // place a stone at best place
+            computerStonesLeft --;
+        } else {
+            // pick a stone and place at adjacent position
+        }
+        userTurn = true;
+
+        // updating game
+        //invalidate();
     }
 
 }

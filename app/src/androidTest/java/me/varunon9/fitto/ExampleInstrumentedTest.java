@@ -1,4 +1,4 @@
-package me.varunon9.fito;
+package me.varunon9.fitto;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("me.varunon9.fito", appContext.getPackageName());
+        assertEquals("me.varunon9.fitto", appContext.getPackageName());
     }
 }

@@ -4,7 +4,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "25.0.0"
     defaultConfig {
-        applicationId "me.varunon9.fito"
+        applicationId "me.varunon9.fitto"
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1

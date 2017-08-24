@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CanvasBoardView">
+        <attr name="playerUser" format="string"/>
+        <attr name="playerComputer" format="string"/>
+        <attr name="computerStoneColor" format="string"/>
+        <attr name="userStoneColor" format="string"/>
+        <attr name="maximumInitialStones" format="integer"/>
+        <attr name="stoneRadius" format="integer"/>
+        <attr name="margin" format="integer"/>
+    </declare-styleable>
+</resources>

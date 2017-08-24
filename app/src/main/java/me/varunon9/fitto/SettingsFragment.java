@@ -1,4 +1,4 @@
-package me.varunon9.fito;
+package me.varunon9.fitto;
 
 
 import android.os.Bundle;

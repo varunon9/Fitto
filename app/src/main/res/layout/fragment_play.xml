@@ -3,8 +3,16 @@
     android:layout_height="match_parent"
     android:padding="@dimen/activity_horizontal_margin">
 
-    <me.varunon9.fito.CanvasBoardView
+    <me.varunon9.fitto.CanvasBoardView
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        custom:computerStoneColor="@string/computer_stone_color"
+        custom:userStoneColor="@string/user_stone_color"
+        custom:margin="20"
+        custom:stoneRadius="20"
+        custom:playerUser="@string/player_user"
+        custom:playerComputer="@string/player_computer"
+        custom:maximumInitialStones="8"/>
 
 </RelativeLayout>
