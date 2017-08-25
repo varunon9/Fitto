@@ -134,11 +134,11 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Fito";
+                    return getString(R.string.app_name);
                 case 1:
-                    return "Settings";
+                    return getString(R.string.action_settings);
                 case 2:
-                    return "Instructions";
+                    return getString(R.string.action_instructions);
             }
             return null;
         }

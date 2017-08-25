@@ -1,15 +1,19 @@
 package me.varunon9.fitto;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 
 /**
  * Created by varun on 20/8/17.
@@ -19,12 +23,15 @@ public class CanvasBoardView extends View {
 
     private Paint userStonePaint;
     private Paint computerStonePaint;
+    private Paint pickedStonePaint;
     private Paint boardPaint;
     private Path boardPath;
+    private Path tripletPath;
     private Paint textPaint;
-    private Context context;
+    private Paint tripletPaint;
     private Canvas mCanvas;
     private Junction junctionsArray[];
+    private FitTriplet fitTripletsArray[];
     private String playerUser;
     private String playerComputer;
     private String computerStoneColor;
@@ -34,17 +41,24 @@ public class CanvasBoardView extends View {
     private int computerStonesLeft;
     private int canvasMargin;
     private int stoneRadius;
-    private boolean userTurn = false;
+    private boolean userTurn;
     private String displayMessage;
-    private final String pickStoneMessage = "Pick a stone";
-    private final String placeStoneMessage = "Place the picked stone";
-    private int computerScore = 0;
-    private int userScore = 0;
-    private boolean gameWon = false;
+    private int computerHealth;
+    private int userHealth;
+    private boolean gameWon;
+    private String gameStatus;
+    private int pickedStoneJunctionNo;
+
+    private static final String TAG = "CanvasBoardView";
+
+    // settings preferences
+    private SharedPreferences settingsPreferences;
 
     // innerMost square has side 2 * unitLength;
     // initialised while building junctionsArray
     private int unitLength;
+
+    private GameUtility gameUtility;
 
     private void init(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs,
@@ -57,7 +71,6 @@ public class CanvasBoardView extends View {
                 typedArray.getInt(R.styleable.CanvasBoardView_maximumInitialStones, 8);
         stoneRadius = typedArray.getInt(R.styleable.CanvasBoardView_stoneRadius, 20);
         canvasMargin = typedArray.getInt(R.styleable.CanvasBoardView_margin, 20);
-        this.context = context;
         userStonePaint = new Paint();
         userStonePaint.setAntiAlias(true);
         userStonePaint.setDither(true);
@@ -70,6 +83,12 @@ public class CanvasBoardView extends View {
         computerStonePaint.setColor(Color.parseColor(computerStoneColor));
         computerStonePaint.setStrokeWidth(stoneRadius);
 
+        pickedStonePaint = new Paint();
+        pickedStonePaint.setAntiAlias(true);
+        pickedStonePaint.setDither(true);
+        pickedStonePaint.setColor(Color.parseColor("#8C8C8C"));
+        pickedStonePaint.setStrokeWidth(stoneRadius);
+
         boardPaint = new Paint();
         boardPaint.setAntiAlias(true);
         boardPaint.setDither(true);
@@ -78,8 +97,7 @@ public class CanvasBoardView extends View {
         boardPaint.setStrokeJoin(Paint.Join.ROUND);
         boardPaint.setStrokeWidth(3);
 
-
-        boardPath = new Path();
+        tripletPath = new Path();
 
         textPaint = new Paint();
         textPaint.setAntiAlias(true);
@@ -87,14 +105,20 @@ public class CanvasBoardView extends View {
         textPaint.setTextSize(2 * canvasMargin);
         textPaint.setColor(Color.parseColor(computerStoneColor));
 
-        userStonesLeft = maximumInitialStones;
-        computerStonesLeft = maximumInitialStones;
-        displayMessage = getUserStoneBalanceMessage();
+        tripletPaint = new Paint();
+        tripletPaint.setAntiAlias(true);
+        tripletPaint.setStyle(Paint.Style.STROKE);
+        tripletPaint.setColor(Color.parseColor(computerStoneColor));
+        tripletPaint.setStrokeWidth(4);
 
         typedArray.recycle();
 
+        settingsPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
         // 24 junctions starting from 1 to 24
         junctionsArray = new Junction[25];
+
+        gameUtility = new GameUtility();
     }
 
     public CanvasBoardView(Context context, AttributeSet attrs) {
@@ -117,6 +141,7 @@ public class CanvasBoardView extends View {
             case MotionEvent.ACTION_MOVE: {
                 break;
             }
+            case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
                 userTouchesBoard(x, y);
                 break;
@@ -128,180 +153,45 @@ public class CanvasBoardView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+        Log.d(TAG, "onSizeChanged called");
 
         // build junctionsArray
-        buildJunctionsArray(junctionsArray, w, h, canvasMargin);System.out.println("on size called");
-
-        // first move by computer
-        // todo check settings
-        playComputer();
+        buildJunctionsArray(junctionsArray, w, h, canvasMargin);
+        boardPath = gameUtility.getBoardPath(junctionsArray);
+        restartGame();
 
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {System.out.println("on Draw called");
+    protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        Log.d(TAG, "on draw called");
         mCanvas = canvas;
-        drawBoard(canvas, junctionsArray);
+        drawBoard();
         placeStones(junctionsArray, canvas);
+        paintTriplets();
         drawMessage();
+        if (!userTurn) {
+            playComputer();
+        }
     }
 
-    /**
-     * There are 24 junctions in BoardView occupiedBy either user or computer
-     */
-    private class Junction {
-        private int x;
-        private int y;
-        private String occupiedBy;
-
-        public int getX() {
-            return x;
-        }
-
-        public void setX(int x) {
-            this.x = x;
-        }
-
-        public int getY() {
-            return y;
-        }
-
-        public void setY(int y) {
-            this.y = y;
-        }
-
-        public String getOccupiedBy() {
-            return occupiedBy;
-        }
-
-        public void setOccupiedBy(String occupiedBy) {
-            this.occupiedBy = occupiedBy;
-        }
-
-    }
-
-    private void drawBoard(Canvas canvas, Junction junctionsArray[]) {
-
-        /**
-         * Visual representation of BoardView
-         * Numbers represent junction where stones will be put
-         *    1---------------------2------------------------3
-         *    |                                               |
-         *    |      9---------------10---------------11      |
-         *    |      |                                |       |
-         *    |      |     17---------18--------19    |       |
-         *    |      |     |                    |     |       |
-         *    |      |     |                    |     |       |
-         *    8     16     24                   20    12     4
-         *    |                                               |
-         *    |                                               |
-         *    |                                               |
-         *    |                                               |
-         *    |                                               |
-         *    |                                               |
-         *    |                                               |
-         *    7---------------------6-----------------------5
-         *
-         *    1 will have coordinate x, y
-         *    2 will have coordinate x + 3, y
-         *    3 will have coordinate x + 6, y
-         *    9 will have coordinate x + 1, y + 1
-         *    10 will have coordinate x + 3, y + 1
-         *    11 will have coordinate x + 5, y likewise
-         */
-
-        // drawing 3 squares
-        for (int i = 1; i <= 3; i++) {
-            int start;
-
-            if (i == 1) {
-                start = 1;
-            } else if (i == 2) {
-                start = 9;
-            } else {
-                start = 17;
+    public void initialiseButtons(Button restartButton, Button undoButton) {
+        restartButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restartGame();
             }
+        });
 
-            boardPath.moveTo(junctionsArray[start].getX(), junctionsArray[start].getY());
-
-            int x, y;
-            for (int j = 1; j < 8; j++) {
-                x = junctionsArray[start + j].getX();
-                y = junctionsArray[start + j].getY();
-                boardPath.lineTo(x, y);
+        undoButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                undoMove();
             }
-
-            // complete square by reaching to starting point
-            boardPath.lineTo(junctionsArray[start].getX(), junctionsArray[start].getY());
-        }
-
-        // drawing lines intersecting all three squares (on corners)
-        for (int i = 1; i <= 7; i += 2) {
-            boardPath.moveTo(junctionsArray[i].getX(), junctionsArray[i].getY());
-            boardPath.lineTo(junctionsArray[i + 16].getX(), junctionsArray[i + 16].getY());
-        }
-
-        // drawing lines intersecting all three squares (on mid)
-        for (int i = 2; i <= 8; i += 2) {
-            boardPath.moveTo(junctionsArray[i].getX(), junctionsArray[i].getY());
-            boardPath.lineTo(junctionsArray[i + 16].getX(), junctionsArray[i + 16].getY());
-        }
-
-        canvas.drawPath(boardPath, boardPaint);
-
+        });
     }
 
-    private void initializeJunctions(Junction junctionsArray[], int startIndex,
-                                    int startX, int startY, int distance) {
-        int i, corner;
-        for (i = startIndex, corner = 1; corner <= 8; i++, corner++) {
-            junctionsArray[i] = new Junction();
-            switch (corner) {
-                case 1: {
-                    junctionsArray[i].x = startX;
-                    junctionsArray[i].y = startY;
-                    break;
-                }
-                case 2: {
-                    junctionsArray[i].x = startX + distance;
-                    junctionsArray[i].y = startY;
-                    break;
-                }
-                case 3: {
-                    junctionsArray[i].x = startX + 2 * distance;
-                    junctionsArray[i].y = startY;
-                    break;
-                }
-                case 4: {
-                    junctionsArray[i].x = startX + 2 * distance;
-                    junctionsArray[i].y = startY + distance;
-                    break;
-                }
-                case 5: {
-                    junctionsArray[i].x = startX + 2 * distance;;
-                    junctionsArray[i].y = startY + 2 * distance;
-                    break;
-                }
-                case 6: {
-                    junctionsArray[i].x = startX + distance;
-                    junctionsArray[i].y = startY + 2 * distance;
-                    break;
-                }
-                case 7: {
-                    junctionsArray[i].x = startX;
-                    junctionsArray[i].y = startY + 2 * distance;
-                    break;
-                }
-                case 8: {
-                    junctionsArray[i].x = startX;
-                    junctionsArray[i].y = startY + distance;
-                    break;
-                }
-            }
-        }
-
-    }
 
     private void buildJunctionsArray(Junction junctionsArray[], int width,
                                      int height, int margin) {
@@ -330,13 +220,14 @@ public class CanvasBoardView extends View {
         int x = margin + (width - outerSquareSide) / 2;
 
         // initialising junctions 1 to 8
-        initializeJunctions(junctionsArray, 1, x, y, 3 * unitLength);
+        gameUtility.initializeJunctions(junctionsArray, 1, x, y, 3 * unitLength);
 
         // initialising junctions 9 to 16
-        initializeJunctions(junctionsArray, 9, (x + unitLength), (y + unitLength), 2 * unitLength);
+        gameUtility.initializeJunctions(junctionsArray, 9,
+                (x + unitLength), (y + unitLength), 2 * unitLength);
 
         // initialising junctions 17 to 24
-        initializeJunctions(junctionsArray, 17, (x + 2 * unitLength),
+        gameUtility.initializeJunctions(junctionsArray, 17, (x + 2 * unitLength),
                 (y + 2 * unitLength), 1 * unitLength);
 
     }
@@ -350,6 +241,11 @@ public class CanvasBoardView extends View {
             }
             int x = junctionsArray[i].getX();
             int y = junctionsArray[i].getY();
+
+            // if picked stone, draw it common
+            if (junction.isPicked()) {
+                drawStone(canvas, x, y, pickedStonePaint);
+            }
             if (occupiedBy.equals(playerUser)) {
                 drawUserStone(canvas, x, y);
             } else if (occupiedBy.equals(playerComputer)) {
@@ -367,10 +263,11 @@ public class CanvasBoardView extends View {
     }
 
     private void drawStone(Canvas canvas, int x, int y, Paint paint) {
-        canvas.drawCircle(x, y, stoneRadius, paint);System.out.println(canvas);
+        canvas.drawCircle(x, y, stoneRadius, paint);
     }
 
     private void userTouchesBoard(float x, float y) {
+        Log.d(TAG, "User Touched board");
 
         // game is over
         if (gameWon) {
@@ -379,25 +276,11 @@ public class CanvasBoardView extends View {
 
         // we don't care if it's computer's turn and user is touching board
         if (!userTurn) {
+            Log.d(TAG, "Not user turn");
             return;
-        } else {
-            userTurn = false;
         }
 
-        // finding corresponding junction from junctionsArray
-        int junctionNo = -1;
-        float proximityThreshold = unitLength / 2;
-        int xCord = 0;
-        int yCord = 0;
-        for (int i = 1; i < junctionsArray.length; i++) {
-            xCord = junctionsArray[i].getX();
-            yCord = junctionsArray[i].getY();
-            if ((Math.abs(xCord - x) < proximityThreshold) &&
-                    (Math.abs(yCord - y) < proximityThreshold)) {
-                junctionNo = i;
-                break;
-            }
-        }
+        int junctionNo = gameUtility.getUserTouchedJunction(x, y, junctionsArray, unitLength);
 
         // if no junction found, i.e. user touched somewhere else
         if (junctionNo < 0) {
@@ -406,17 +289,83 @@ public class CanvasBoardView extends View {
 
         Junction junction = junctionsArray[junctionNo];
         String occupiedBy = junction.getOccupiedBy();
-        if (occupiedBy == null) {
-            // valid position, user can draw stone
-            junction.setOccupiedBy(playerUser);
-            userStonesLeft --;
-            displayMessage = getUserStoneBalanceMessage();
+
+        // to avoid unnecessary calling of invalidate()
+        boolean gameStatusChanged = false;
+
+        if (gameStatus.equals(GameStatus.PLACE_STONE)) {
+            if (occupiedBy == null || occupiedBy.equals("")) {
+                // check if junctionNo is adjacent to pickedStoneNo
+                if (gameUtility.isAdjacent(junctionNo, pickedStoneJunctionNo)) {
+                    // valid position, user can place stone
+                    junctionsArray[pickedStoneJunctionNo].setPicked(false);
+                    junctionsArray[pickedStoneJunctionNo].setOccupiedBy("");
+                    junction.setOccupiedBy(playerUser);
+                    displayMessage = DisplayMessage.PICK_STONE;
+                    gameStatus = GameStatus.PICK_STONE;
+                    userTurn = false;
+                    gameStatusChanged = true;
+                }
+                if (isTripletFit(junctionNo, playerUser)) {
+                    displayMessage = DisplayMessage.EAT_STONE;
+                    gameStatus = GameStatus.EAT_STONE;
+                    userTurn = true;
+                }
+            }
+        } else if (gameStatus.equals(GameStatus.PICK_STONE)) {
+            if (occupiedBy != null && occupiedBy.equals(playerUser)) {
+                // valid position, user can pick stone
+                junction.setPicked(true);
+                pickedStoneJunctionNo = junctionNo;
+                displayMessage = DisplayMessage.PLACE_STONE;
+                gameStatus = GameStatus.PLACE_STONE;
+                userTurn = true;
+                gameStatusChanged = true;
+            }
+        } else if (gameStatus.equals(GameStatus.DRAW_STONE)) {
+            if (occupiedBy == null || occupiedBy.equals("")) {
+                // valid position, user can draw stone
+                junction.setOccupiedBy(playerUser);
+                userStonesLeft --;
+                if (userStonesLeft > 0) {
+                    displayMessage = getUserStoneBalanceMessage();
+                    gameStatus = GameStatus.DRAW_STONE;
+                } else {
+                    displayMessage = DisplayMessage.PICK_STONE;
+                    gameStatus = GameStatus.PICK_STONE;
+                }
+                userTurn = false;
+                if (isTripletFit(junctionNo, playerUser)) {
+                    displayMessage = DisplayMessage.EAT_STONE;
+                    gameStatus = GameStatus.EAT_STONE;
+                    userTurn = true;
+                }
+                gameStatusChanged = true;
+            }
+        } else if (gameStatus.equals(GameStatus.EAT_STONE)) {
+            if (occupiedBy != null && occupiedBy.equals(playerComputer)) {
+                // check if this stone is not part of triplet
+                if (gameUtility.isNotPartOfTriplet(fitTripletsArray, junctionNo)) {
+                    // valid position, user can eat stone
+                    junction.setOccupiedBy("");
+                    computerHealth --;
+                    if (userStonesLeft > 0) {
+                        displayMessage = getUserStoneBalanceMessage();
+                        gameStatus = GameStatus.DRAW_STONE;
+                    } else {
+                        displayMessage = DisplayMessage.PICK_STONE;
+                        gameStatus = GameStatus.PICK_STONE;
+                    }
+                    userTurn = false;
+                    gameStatusChanged = true;
+                }
+            }
         }
 
         // updating game
-        invalidate();
-
-        playComputer();
+        if (gameStatusChanged) {
+            invalidate();
+        }
     }
 
     private void drawMessage() {
@@ -430,15 +379,40 @@ public class CanvasBoardView extends View {
         mCanvas.drawText(displayMessage, x, y, textPaint);
     }
 
-    private String getUserStoneBalanceMessage() {
-        return "Your Turn, Stones Left: " + userStonesLeft;
+    private void drawBoard() {
+        mCanvas.drawPath(boardPath, boardPaint);
     }
 
-    private String getComputerStoneBalanceMessage() {
-        return "Computer's Turn, Stones Left: " + computerStonesLeft;
+    private void paintTriplets() {
+        for (int i = 1; i < fitTripletsArray.length; i++) {
+            FitTriplet fitTriplet = fitTripletsArray[i];
+            Triplet tripletsArray[] = fitTriplet.getTripletsArray();
+            for (int j = 0; j < tripletsArray.length; j++) {
+                Triplet triplet = tripletsArray[j];
+                if (triplet.isActive()) {
+                    Log.d(TAG, "painting triplet for junction " + i);
+                    gameUtility.paintTriplet(triplet, mCanvas, tripletPaint,
+                            junctionsArray, tripletPath);
+                }
+            }
+        }
+    }
+
+    private String getUserStoneBalanceMessage() {
+        return DisplayMessage.DRAW_STONE + userStonesLeft;
     }
 
     private void playComputer() {
+
+        // check winner
+        String winner =
+                gameUtility.getWinner(playerUser, playerComputer, userHealth, computerHealth);
+        if (winner == null) {
+        } else {
+            gameWon = true;
+            setWinnerMessage(winner);
+            invalidate();
+        }
 
         // game is over
         if (gameWon) {
@@ -451,10 +425,78 @@ public class CanvasBoardView extends View {
         } else {
             // pick a stone and place at adjacent position
         }
-        userTurn = true;
 
+        winner =  gameUtility.getWinner(playerUser, playerComputer, userHealth, computerHealth);
+        if (winner == null) {
+            userTurn = true;
+        } else {
+            gameWon = true;
+            setWinnerMessage(winner);
+        }
         // updating game
-        //invalidate();
+        invalidate();
+    }
+
+    private boolean isTripletFit(int junctionNo, String player) {
+        Triplet tripletsArray[] = fitTripletsArray[junctionNo].getTripletsArray();
+        for (int i = 0; i < tripletsArray.length; i++) {
+            Triplet triplet = tripletsArray[i];
+            int junctionNo1 = triplet.getJunctionNo1();
+            int junctionNo2 = triplet.getJunctionNo2();
+            int junctionNo3 = triplet.getJunctionNo3();
+            if (junctionsArray[junctionNo1].getOccupiedBy() != null &&
+                    junctionsArray[junctionNo1].getOccupiedBy().equals(player)) {
+                if (junctionsArray[junctionNo2].getOccupiedBy() != null &&
+                        junctionsArray[junctionNo2].getOccupiedBy().equals(player)) {
+                    if (junctionsArray[junctionNo3].getOccupiedBy() != null &&
+                            junctionsArray[junctionNo3].getOccupiedBy().equals(player)) {
+                        triplet.setActive(true);
+                        Log.d(TAG, "Triplet formed at junctionNo " + junctionNo + " by "
+                                + player);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private void setWinnerMessage(String winner) {
+        if (winner.equals(playerComputer)) {
+            displayMessage = DisplayMessage.COMPUTER_WON;
+        } else {
+            displayMessage = DisplayMessage.USER_WON;
+        }
+    }
+
+    private void restartGame() {
+        Log.d(TAG, "restart called");
+
+        // reinitialising all variables
+        computerHealth = maximumInitialStones;
+        userHealth = maximumInitialStones;
+        gameWon = false;
+        userTurn = false;
+        userStonesLeft = maximumInitialStones;
+        computerStonesLeft = maximumInitialStones;
+        displayMessage = getUserStoneBalanceMessage();
+        for (int i = 1; i < junctionsArray.length; i++) {
+            junctionsArray[i].setOccupiedBy("");
+        }
+        fitTripletsArray = gameUtility.getFitTripletsArray();
+        gameStatus = GameStatus.DRAW_STONE;
+
+        // checking if first move is by computer
+        if (settingsPreferences.getBoolean("fitto_computer_plays_first", true)) {
+            playComputer();
+        } else {
+            userTurn = true;
+        }
+        invalidate();
+    }
+
+    private void undoMove() {
+        //Log.d(TAG, "UndoMove");
     }
 
 }
