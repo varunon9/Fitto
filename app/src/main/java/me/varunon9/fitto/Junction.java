@@ -45,4 +45,5 @@ public class Junction {
     public void setPicked(boolean picked) {
         this.picked = picked;
     }
+
 }

@@ -15,6 +15,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by varun on 20/8/17.
  */
@@ -29,7 +32,7 @@ public class CanvasBoardView extends View {
     private Path tripletPath;
     private Paint textPaint;
     private Paint tripletPaint;
-    private Canvas mCanvas;
+    private Canvas canvas;
     private Junction junctionsArray[];
     private FitTriplet fitTripletsArray[];
     private String playerUser;
@@ -48,6 +51,9 @@ public class CanvasBoardView extends View {
     private boolean gameWon;
     private String gameStatus;
     private int pickedStoneJunctionNo;
+    private int latestUserStoneJunctionNo;
+    private int latestComputerStoneJunctionNo;
+    private List<Triplet> activeTripletsList;
 
     private static final String TAG = "CanvasBoardView";
 
@@ -95,7 +101,7 @@ public class CanvasBoardView extends View {
         boardPaint.setColor(ContextCompat.getColor(context, R.color.colorAccent));
         boardPaint.setStyle(Paint.Style.STROKE);
         boardPaint.setStrokeJoin(Paint.Join.ROUND);
-        boardPaint.setStrokeWidth(3);
+        boardPaint.setStrokeWidth(4);
 
         tripletPath = new Path();
 
@@ -109,7 +115,7 @@ public class CanvasBoardView extends View {
         tripletPaint.setAntiAlias(true);
         tripletPaint.setStyle(Paint.Style.STROKE);
         tripletPaint.setColor(Color.parseColor(computerStoneColor));
-        tripletPaint.setStrokeWidth(4);
+        tripletPaint.setStrokeWidth(5);
 
         typedArray.recycle();
 
@@ -147,7 +153,7 @@ public class CanvasBoardView extends View {
                 break;
             }
         }
-        return  true;
+        return true;
     }
 
     @Override
@@ -166,13 +172,18 @@ public class CanvasBoardView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         Log.d(TAG, "on draw called");
-        mCanvas = canvas;
+        this.canvas = canvas;
         drawBoard();
         placeStones(junctionsArray, canvas);
         paintTriplets();
         drawMessage();
+        if (gameWon) {
+            return;
+        }
         if (!userTurn) {
             playComputer();
+        } else {
+            //todo play sound based on game status and/or vibrate
         }
     }
 
@@ -242,14 +253,15 @@ public class CanvasBoardView extends View {
             int x = junctionsArray[i].getX();
             int y = junctionsArray[i].getY();
 
-            // if picked stone, draw it common
-            if (junction.isPicked()) {
-                drawStone(canvas, x, y, pickedStonePaint);
-            }
             if (occupiedBy.equals(playerUser)) {
                 drawUserStone(canvas, x, y);
             } else if (occupiedBy.equals(playerComputer)) {
                 drawComputerStone(canvas, x, y);
+            }
+
+            // if picked stone, draw it common
+            if (junction.isPicked()) {
+                drawStone(canvas, x, y, pickedStonePaint);
             }
         }
     }
@@ -267,7 +279,6 @@ public class CanvasBoardView extends View {
     }
 
     private void userTouchesBoard(float x, float y) {
-        Log.d(TAG, "User Touched board");
 
         // game is over
         if (gameWon) {
@@ -281,6 +292,7 @@ public class CanvasBoardView extends View {
         }
 
         int junctionNo = gameUtility.getUserTouchedJunction(x, y, junctionsArray, unitLength);
+        Log.d(TAG, "User Touched board at junction No: " + junctionNo);
 
         // if no junction found, i.e. user touched somewhere else
         if (junctionNo < 0) {
@@ -295,12 +307,17 @@ public class CanvasBoardView extends View {
 
         if (gameStatus.equals(GameStatus.PLACE_STONE)) {
             if (occupiedBy == null || occupiedBy.equals("")) {
+
                 // check if junctionNo is adjacent to pickedStoneNo
                 if (gameUtility.isAdjacent(junctionNo, pickedStoneJunctionNo)) {
+
                     // valid position, user can place stone
                     junctionsArray[pickedStoneJunctionNo].setPicked(false);
                     junctionsArray[pickedStoneJunctionNo].setOccupiedBy("");
-                    junction.setOccupiedBy(playerUser);
+                    userDrawsOrPlaceStone(junctionNo);
+
+                    // if picked stone was part of triplet, disable it
+                    disableTripletFit(pickedStoneJunctionNo);
                     displayMessage = DisplayMessage.PICK_STONE;
                     gameStatus = GameStatus.PICK_STONE;
                     userTurn = false;
@@ -314,19 +331,24 @@ public class CanvasBoardView extends View {
             }
         } else if (gameStatus.equals(GameStatus.PICK_STONE)) {
             if (occupiedBy != null && occupiedBy.equals(playerUser)) {
-                // valid position, user can pick stone
-                junction.setPicked(true);
-                pickedStoneJunctionNo = junctionNo;
-                displayMessage = DisplayMessage.PLACE_STONE;
-                gameStatus = GameStatus.PLACE_STONE;
-                userTurn = true;
-                gameStatusChanged = true;
+
+                // check if adjacent position is vacant
+                if (gameUtility.isAdjacentVacant(junctionNo, junctionsArray)) {
+
+                    // valid position, user can pick stone
+                    junction.setPicked(true);
+                    pickedStoneJunctionNo = junctionNo;
+                    displayMessage = DisplayMessage.PLACE_STONE;
+                    gameStatus = GameStatus.PLACE_STONE;
+                    userTurn = true;
+                    gameStatusChanged = true;
+                }
             }
         } else if (gameStatus.equals(GameStatus.DRAW_STONE)) {
             if (occupiedBy == null || occupiedBy.equals("")) {
+
                 // valid position, user can draw stone
-                junction.setOccupiedBy(playerUser);
-                userStonesLeft --;
+                userDrawsOrPlaceStone(junctionNo);
                 if (userStonesLeft > 0) {
                     displayMessage = getUserStoneBalanceMessage();
                     gameStatus = GameStatus.DRAW_STONE;
@@ -344,11 +366,13 @@ public class CanvasBoardView extends View {
             }
         } else if (gameStatus.equals(GameStatus.EAT_STONE)) {
             if (occupiedBy != null && occupiedBy.equals(playerComputer)) {
+
                 // check if this stone is not part of triplet
-                if (gameUtility.isNotPartOfTriplet(fitTripletsArray, junctionNo)) {
+                if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo)) {
+
                     // valid position, user can eat stone
                     junction.setOccupiedBy("");
-                    computerHealth --;
+                    computerHealth--;
                     if (userStonesLeft > 0) {
                         displayMessage = getUserStoneBalanceMessage();
                         gameStatus = GameStatus.DRAW_STONE;
@@ -369,32 +393,25 @@ public class CanvasBoardView extends View {
     }
 
     private void drawMessage() {
-        int width = mCanvas.getWidth();
-        int height = mCanvas.getHeight();
+        int width = canvas.getWidth();
+        int height = canvas.getHeight();
         int outerSquareSideLength = 6 * unitLength;
         int x = width / 2;
         int y = outerSquareSideLength +
                 (height - canvasMargin - outerSquareSideLength) / 2;
         y = y - (int) (textPaint.ascent() + textPaint.descent()) / 2;
-        mCanvas.drawText(displayMessage, x, y, textPaint);
+        canvas.drawText(displayMessage, x, y, textPaint);
     }
 
     private void drawBoard() {
-        mCanvas.drawPath(boardPath, boardPaint);
+        canvas.drawPath(boardPath, boardPaint);
     }
 
     private void paintTriplets() {
-        for (int i = 1; i < fitTripletsArray.length; i++) {
-            FitTriplet fitTriplet = fitTripletsArray[i];
-            Triplet tripletsArray[] = fitTriplet.getTripletsArray();
-            for (int j = 0; j < tripletsArray.length; j++) {
-                Triplet triplet = tripletsArray[j];
-                if (triplet.isActive()) {
-                    Log.d(TAG, "painting triplet for junction " + i);
-                    gameUtility.paintTriplet(triplet, mCanvas, tripletPaint,
-                            junctionsArray, tripletPath);
-                }
-            }
+        for (int i = 0; i < activeTripletsList.size(); i++) {
+            Triplet triplet = activeTripletsList.get(i);
+            gameUtility.paintTriplet(triplet, canvas, tripletPaint,
+                    junctionsArray, tripletPath);
         }
     }
 
@@ -419,24 +436,112 @@ public class CanvasBoardView extends View {
             return;
         }
 
+        List<Integer> junctionsListToFitTripletComputer =
+                gameUtility.getAllJunctionNumbersToFitTriplet(junctionsArray,
+                        fitTripletsArray, playerComputer);
+        List<Integer> junctionsListToFitTripletUser =
+                gameUtility.getAllJunctionNumbersToFitTriplet(junctionsArray,
+                        fitTripletsArray, playerUser);
         if (computerStonesLeft > 0) {
-            // place a stone at best place
-            computerStonesLeft --;
+
+            // Fit a triplet, if such junction Exist
+            if (!junctionsListToFitTripletComputer.isEmpty()) {
+                Log.d(TAG, "computer fits a triplet");
+                int junctionNo = junctionsListToFitTripletComputer.get(0);
+                computerDrawsOrPlaceStone(junctionNo);
+
+                // make this triplet active
+                isTripletFit(junctionNo, playerComputer);
+
+                // eat best stone of user
+                computerEatsStone();
+            } else {
+
+                // block user from making/forming/fitting a triplet
+                if (!junctionsListToFitTripletUser.isEmpty()) {
+                    Log.d(TAG, "computer blocks user from making a triplet");
+
+                    // todo block best junction and not first
+                    int junctionNo = junctionsListToFitTripletUser.get(0);
+                    computerDrawsOrPlaceStone(junctionNo);
+                } else {
+                    List<Integer> junctionsListToFitDualTripletUser =
+                            gameUtility.getAllJunctionNumbersToFitFutureDualTriplet(junctionsArray,
+                                    fitTripletsArray, playerUser, latestUserStoneJunctionNo);
+                    List<Integer> junctionsListToFitDualTripletComputer =
+                            gameUtility.getAllJunctionNumbersToFitFutureDualTriplet(junctionsArray,
+                                    fitTripletsArray, playerComputer, latestComputerStoneJunctionNo);
+
+                    /**
+                     * block user from making a future dual triplet
+                     * i.e. if user has stone at junction 1 and 5 (2, 3, 4 are vacant)
+                     * then computer draws stone at 3
+                     * similarly if user has stone at 1 and 10 (2, 3 , 18 are vacant)
+                     * then computer draws stone at 2
+                     */
+                    if (!junctionsListToFitDualTripletUser.isEmpty()) {
+                        Log.d(TAG, "computer blocks user from making a future dual triplet");
+
+                        // todo block best junction and not first
+                        int junctionNo = junctionsListToFitDualTripletUser.get(0);
+                        computerDrawsOrPlaceStone(junctionNo);
+                    } else if(!junctionsListToFitDualTripletComputer.isEmpty()) {
+                        Log.d(TAG, "computer draw stone to make a future dual triplet");
+
+                        // place a stone at junction where a dual triplet can be fit
+                        // todo place stone at best junction
+                        int junctionNo = junctionsListToFitDualTripletComputer.get(0);
+                        computerDrawsOrPlaceStone(junctionNo);
+                    } else {
+                        Log.d(TAG, "computer places stone at opposite corner in same square "
+                                + "as that of user");
+
+                        // draw a stone in same square as that of user and at opposite corner
+                        // todo
+                    }
+                }
+            }
         } else {
+
             // pick a stone and place at adjacent position
         }
 
-        winner =  gameUtility.getWinner(playerUser, playerComputer, userHealth, computerHealth);
+        winner = gameUtility.getWinner(playerUser, playerComputer, userHealth, computerHealth);
         if (winner == null) {
             userTurn = true;
         } else {
             gameWon = true;
             setWinnerMessage(winner);
         }
+
         // updating game
         invalidate();
     }
 
+    private void computerDrawsOrPlaceStone(int junctionNo) {
+        junctionsArray[junctionNo].setOccupiedBy(playerComputer);
+        latestComputerStoneJunctionNo = junctionNo;
+        if (computerStonesLeft > 0) {
+            computerStonesLeft--;
+        }
+    }
+
+    private void userDrawsOrPlaceStone(int junctionNo) {
+        junctionsArray[junctionNo].setOccupiedBy(playerUser);
+        latestUserStoneJunctionNo = junctionNo;
+        if (userStonesLeft > 0) {
+            userStonesLeft--;
+        }
+    }
+
+    /**
+     * This method checks if newly made move fit any triplet
+     * this method is also responsible for setting all junctions (affected by newly made move)
+     * to update value isPartOfTriplet
+     * @param junctionNo
+     * @param player
+     * @return
+     */
     private boolean isTripletFit(int junctionNo, String player) {
         Triplet tripletsArray[] = fitTripletsArray[junctionNo].getTripletsArray();
         for (int i = 0; i < tripletsArray.length; i++) {
@@ -451,14 +556,37 @@ public class CanvasBoardView extends View {
                     if (junctionsArray[junctionNo3].getOccupiedBy() != null &&
                             junctionsArray[junctionNo3].getOccupiedBy().equals(player)) {
                         triplet.setActive(true);
-                        Log.d(TAG, "Triplet formed at junctionNo " + junctionNo + " by "
-                                + player);
+                        triplet.setOwnedBy(player);
+
+                        // will add triplet to activeList if it is not already added
+                        gameUtility.addTripletToActiveTripletsList(triplet, activeTripletsList);
+                        Log.d(TAG, "Triplet formed at junctionNo " + junctionNo + " by " + player);
                         return true;
                     }
                 }
             }
         }
         return false;
+    }
+
+    private void disableTripletFit(int junctionNo) {
+        Triplet tripletsArray[] = fitTripletsArray[junctionNo].getTripletsArray();
+        for (int i = 0; i < tripletsArray.length; i++) {
+            Triplet triplet = tripletsArray[i];
+            triplet.setActive(false);
+            triplet.setOwnedBy("");
+
+            // will remove it from activeList if it is present
+            gameUtility.removeTripletFromActiveTripletsList(triplet, activeTripletsList);
+        }
+    }
+
+    private void computerEatsStone() {
+        Log.d(TAG, "computer eats a stone");
+
+        // todo play a sound and or vibration
+        // todo what if opponent player has all stones locked i.e. fit
+        userHealth--;
     }
 
     private void setWinnerMessage(String winner) {
@@ -485,6 +613,7 @@ public class CanvasBoardView extends View {
         }
         fitTripletsArray = gameUtility.getFitTripletsArray();
         gameStatus = GameStatus.DRAW_STONE;
+        activeTripletsList = new ArrayList();
 
         // checking if first move is by computer
         if (settingsPreferences.getBoolean("fitto_computer_plays_first", true)) {

@@ -4,6 +4,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by varun on 25/8/17.
  * This class contains utility functions related to Fitto game which are called frequently
@@ -101,7 +104,7 @@ public class GameUtility {
     }
 
     public void initializeJunctions(Junction junctionsArray[], int startIndex,
-                                     int startX, int startY, int distance) {
+                                    int startX, int startY, int distance) {
         int i, corner;
         for (i = startIndex, corner = 1; corner <= 8; i++, corner++) {
             junctionsArray[i] = new Junction();
@@ -191,7 +194,6 @@ public class GameUtility {
 
     private Triplet buildTriplet(int junctionNo1, int junctionNo2, int junctionNo3) {
         Triplet triplet = new Triplet();
-        triplet.setCredited(false);
         triplet.setJunctionNo1(junctionNo1);
         triplet.setJunctionNo2(junctionNo2);
         triplet.setJunctionNo3(junctionNo3);
@@ -313,25 +315,274 @@ public class GameUtility {
             }
         }
         if (difference == 1) {
-            if ((junctionNo1 == 8 && junctionNo2 != 9)
-                    || (junctionNo1 == 9 && junctionNo2 != 8)) {
-                return true;
+            if ((junctionNo1 == 8 && junctionNo2 == 9)
+                    || (junctionNo1 == 9 && junctionNo2 == 8)) {
+                return false;
             }
-            if ((junctionNo1 == 16 && junctionNo2 != 17)
-                    || (junctionNo1 == 17 && junctionNo2 != 16)) {
+            if ((junctionNo1 == 16 && junctionNo2 == 17)
+                    || (junctionNo1 == 17 && junctionNo2 == 16)) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isPartOfTriplet(List<Triplet> activeTripletsList, int junctionNo) {
+        for (int i = 0; i < activeTripletsList.size(); i++) {
+            Triplet triplet = activeTripletsList.get(i);
+            int junctionNo1 = triplet.getJunctionNo1();
+            int junctionNo2 = triplet.getJunctionNo2();
+            int junctionNo3 = triplet.getJunctionNo3();
+            if (junctionNo == junctionNo1
+                    || junctionNo == junctionNo2
+                    || junctionNo == junctionNo3) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean isNotPartOfTriplet(FitTriplet fitTripletsArray[], int junctionNo) {
-        Triplet tripletsArray[] = fitTripletsArray[junctionNo].getTripletsArray();
-        for (int i = 0; i < tripletsArray.length; i++) {
-            if (tripletsArray[i].isActive()) {
-                return false;
+    public boolean isAdjacentVacant(int junctionNo, Junction junctionsArray[]) {
+
+        // checking vacant position in other square
+        int adjacentJunctionNo = junctionNo + 8;
+        if (adjacentJunctionNo <= 24) {
+            if (isVacant(adjacentJunctionNo, junctionsArray)) {
+                return true;
             }
         }
-        return true;
+        adjacentJunctionNo = junctionNo - 8;
+        if (adjacentJunctionNo >= 1) {
+            if (isVacant(adjacentJunctionNo, junctionsArray)) {
+                return true;
+            }
+        }
+
+        // checking vacant position in same square by increasing position
+        if (junctionNo != 8 && junctionNo != 16 && junctionNo != 24) {
+            adjacentJunctionNo = junctionNo + 1;
+        } else {
+            adjacentJunctionNo = junctionNo - 7;
+        }
+        if (isVacant(adjacentJunctionNo, junctionsArray)) {
+            return true;
+        }
+
+        // checking vacant position in same square by decreasing position
+        if (junctionNo != 1 && junctionNo != 9 && junctionNo != 17) {
+            adjacentJunctionNo = junctionNo - 1;
+        } else {
+            adjacentJunctionNo = junctionNo + 7;
+        }
+        if (isVacant(adjacentJunctionNo, junctionsArray)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isVacant(int junctionNo, Junction junctionsArray[]) {
+        if (junctionsArray[junctionNo].getOccupiedBy() == null
+                || junctionsArray[junctionNo].getOccupiedBy().equals("")) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isOccupiedBy(int junctionNo, Junction junctionsArray[], String player) {
+        if (junctionsArray[junctionNo].getOccupiedBy() != null
+                && junctionsArray[junctionNo].getOccupiedBy().equals(player)) {
+            return true;
+        }
+        return false;
+    }
+
+    public List<Integer> getAllJunctionNumbersToFitTriplet(Junction junctionsArray[],
+                                                           FitTriplet fitTripletsArray[],
+                                                           String player) {
+        List<Integer> junctionNumbersList = new ArrayList<>();
+        for (int i = 1; i < fitTripletsArray.length; i++) {
+            Triplet tripletsArray[] = fitTripletsArray[i].getTripletsArray();
+            for (int j = 0; j < tripletsArray.length; j++) {
+                Triplet triplet = tripletsArray[j];
+
+                // triplet must not be active
+                if (!triplet.isActive()) {
+                    int junctionNo1 = triplet.getJunctionNo1();
+                    int junctionNo2 = triplet.getJunctionNo2();
+                    int junctionNo3 = triplet.getJunctionNo3();
+
+                    // any two junctions should be occupied by player and 3rd must be vacant
+                    if (isVacant(junctionNo1, junctionsArray)) {
+                        if (isBothJunctionsOccupiedByPlayer(junctionsArray, player,
+                                junctionNo2, junctionNo3)) {
+                            junctionNumbersList.add(junctionNo1);
+                        }
+                    } else if (isVacant(junctionNo2, junctionsArray)) {
+                        if (isBothJunctionsOccupiedByPlayer(junctionsArray, player,
+                                junctionNo1, junctionNo3)) {
+                            junctionNumbersList.add(junctionNo2);
+                        }
+                    } else if (isVacant(junctionNo3, junctionsArray)) {
+                        if (isBothJunctionsOccupiedByPlayer(junctionsArray, player,
+                                junctionNo1, junctionNo2)) {
+                            junctionNumbersList.add(junctionNo3);
+                        }
+                    }
+                }
+            }
+        }
+        return junctionNumbersList;
+    }
+
+    /**
+     * A dual triplet is arrangement of stones in such a way that player can form 2 triplets
+     * Thus even if opponent blocks one triplet, player will form another
+     *
+     * @param junctionsArray
+     * @param fitTripletsArray
+     * @param player
+     * @return list of all junctions, where by drawing a stone a dual triplet will be formed
+     */
+    public List<Integer> getAllJunctionNumbersToFitFutureDualTriplet(Junction junctionsArray[],
+                                                                     FitTriplet fitTripletsArray[],
+                                                                     String player,
+                                                                     int latestPlayerStoneJunctionNo) {
+        List<Integer> junctionNumbersList = new ArrayList<>();
+        if (latestPlayerStoneJunctionNo > 0) {
+            Triplet tripletsArray[] = fitTripletsArray[latestPlayerStoneJunctionNo].getTripletsArray();
+            for (int j = 0; j < tripletsArray.length; j++) {
+                Triplet triplet = tripletsArray[j];
+
+                /**
+                 * get other two junctions of triplet, except the current one (i.e. i)
+                 * and check if triplets at those two junctions (except current one)
+                 * are one occupied and two vacant
+                 */
+                int junctionNo1 = triplet.getJunctionNo1();
+                int junctionNo2 = triplet.getJunctionNo2();
+                int junctionNo3 = triplet.getJunctionNo3();
+                if (junctionNo1 != latestPlayerStoneJunctionNo && isVacant(junctionNo1, junctionsArray)) {
+                    if (areTripletsOneOccupiedAndTwoVacant(junctionNo1, latestPlayerStoneJunctionNo,
+                            junctionsArray, fitTripletsArray, player)) {
+                        junctionNumbersList.add(junctionNo1);
+                    }
+                }
+                if (junctionNo2 != latestPlayerStoneJunctionNo && isVacant(junctionNo2, junctionsArray)) {
+                    if (areTripletsOneOccupiedAndTwoVacant(junctionNo2, latestPlayerStoneJunctionNo,
+                            junctionsArray, fitTripletsArray, player)) {
+                        junctionNumbersList.add(junctionNo2);
+                    }
+                }
+                if (junctionNo3 != latestPlayerStoneJunctionNo && isVacant(junctionNo3, junctionsArray)) {
+                    if (areTripletsOneOccupiedAndTwoVacant(junctionNo3, latestPlayerStoneJunctionNo,
+                            junctionsArray, fitTripletsArray, player)) {
+                        junctionNumbersList.add(junctionNo3);
+                    }
+                }
+            }
+        }
+        return junctionNumbersList;
+    }
+
+    private boolean isBothJunctionsOccupiedByPlayer(Junction junctionsArray[], String player,
+                                                    int junctionNo1, int junctionNo2) {
+        if (!isVacant(junctionNo1, junctionsArray)) {
+            if (!isVacant(junctionNo2, junctionsArray)) {
+                if (isOccupiedBy(junctionNo1, junctionsArray, player)) {
+                    if (isOccupiedBy(junctionNo2, junctionsArray, player)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method tells whether all triplets at junctionNo (excluding the triplet of which
+     * excludedJunctionNo is part of) are one occupied ant two vacant
+     * junctionNo has been already checked for vacant in caller method
+     *
+     * @param junctionNo
+     * @param excludedJunctionNo
+     * @param junctionsArray
+     * @param fitTripletsArray
+     * @return
+     */
+    private boolean areTripletsOneOccupiedAndTwoVacant(int junctionNo,
+                                                       int excludedJunctionNo,
+                                                       Junction junctionsArray[],
+                                                       FitTriplet fitTripletsArray[],
+                                                       String player) {
+        Triplet tripletsArray[] = fitTripletsArray[junctionNo].getTripletsArray();
+        for (int i = 0; i < tripletsArray.length; i++) {
+            Triplet triplet = tripletsArray[i];
+            int junctionNo1 = triplet.getJunctionNo1();
+            int junctionNo2 = triplet.getJunctionNo2();
+            int junctionNo3 = triplet.getJunctionNo3();
+            if (junctionNo1 != excludedJunctionNo
+                    && junctionNo2 != excludedJunctionNo
+                    && junctionNo3 != excludedJunctionNo) {
+
+                // junctionNo is vacant, we know it. so other two junctions
+                // should be occupied and vacant
+                if (junctionNo1 == junctionNo) {
+                    if (isVacant(junctionNo2, junctionsArray)) {
+                        if (isOccupiedBy(junctionNo3, junctionsArray, player)) {
+                            return true;
+                        }
+                    } else if (isVacant(junctionNo3, junctionsArray)) {
+                        if (isOccupiedBy(junctionNo2, junctionsArray, player)) {
+                            return true;
+                        }
+                    }
+                }
+                if (junctionNo2 == junctionNo) {
+                    if (isVacant(junctionNo1, junctionsArray)) {
+                        if (isOccupiedBy(junctionNo3, junctionsArray, player)) {
+                            return true;
+                        }
+                    } else if (isVacant(junctionNo3, junctionsArray)) {
+                        if (isOccupiedBy(junctionNo1, junctionsArray, player)) {
+                            return true;
+                        }
+                    }
+                }
+                if (junctionNo3 == junctionNo) {
+                    if (isVacant(junctionNo1, junctionsArray)) {
+                        if (isOccupiedBy(junctionNo2, junctionsArray, player)) {
+                            return true;
+                        }
+                    } else if (isVacant(junctionNo2, junctionsArray)) {
+                        if (isOccupiedBy(junctionNo1, junctionsArray, player)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public void removeTripletFromActiveTripletsList(Triplet tripletToBeRemoved,
+                                                    List<Triplet> activeTripletsList) {
+        for (int i = 0; i < activeTripletsList.size(); i++) {
+            Triplet triplet = activeTripletsList.get(i);
+            if (triplet.equals(tripletToBeRemoved)) {
+                activeTripletsList.remove(i);
+            }
+        }
+    }
+
+    public void addTripletToActiveTripletsList(Triplet tripletToBeAdded,
+                                                    List<Triplet> activeTripletsList) {
+        for (int i = 0; i < activeTripletsList.size(); i++) {
+            Triplet triplet = activeTripletsList.get(i);
+            if (triplet.equals(tripletToBeAdded)) {
+                return;
+            }
+        }
+        activeTripletsList.add(tripletToBeAdded);
     }
 }
