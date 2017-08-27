@@ -615,7 +615,7 @@ public class CanvasBoardView extends View {
         Log.d(TAG, "computer eats a stone");
         playSoundAndVibration(playerComputer);
         if (gameUtility.canEatPlayerStone(junctionsArray,
-                playerComputer, activeTripletsList)) {
+                playerUser, activeTripletsList)) {
 
             // todo eat a stone
             userHealth--;
@@ -628,7 +628,7 @@ public class CanvasBoardView extends View {
 
         // if user can eat stone, it's fine. else userHealth will increase
         if (gameUtility.canEatPlayerStone(junctionsArray,
-                playerUser, activeTripletsList)) {
+                playerComputer, activeTripletsList)) {
             displayMessage = DisplayMessage.EAT_STONE;
             gameStatus = GameStatus.EAT_STONE;
             userTurn = true;
