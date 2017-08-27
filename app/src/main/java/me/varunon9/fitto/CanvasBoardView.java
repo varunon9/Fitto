@@ -7,6 +7,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
@@ -30,8 +35,9 @@ public class CanvasBoardView extends View {
     private Paint boardPaint;
     private Path boardPath;
     private Path tripletPath;
-    private Paint textPaint;
+    private Paint displayMessagePaint;
     private Paint tripletPaint;
+    private Paint scoreMessagePaint;
     private Canvas canvas;
     private Junction junctionsArray[];
     private FitTriplet fitTripletsArray[];
@@ -54,6 +60,7 @@ public class CanvasBoardView extends View {
     private int latestUserStoneJunctionNo;
     private int latestComputerStoneJunctionNo;
     private List<Triplet> activeTripletsList;
+    private Context context;
 
     private static final String TAG = "CanvasBoardView";
 
@@ -65,6 +72,9 @@ public class CanvasBoardView extends View {
     private int unitLength;
 
     private GameUtility gameUtility;
+
+    private Vibrator vibrator;
+    private MediaPlayer mediaPlayer;
 
     private void init(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs,
@@ -105,11 +115,17 @@ public class CanvasBoardView extends View {
 
         tripletPath = new Path();
 
-        textPaint = new Paint();
-        textPaint.setAntiAlias(true);
-        textPaint.setTextAlign(Paint.Align.CENTER);
-        textPaint.setTextSize(2 * canvasMargin);
-        textPaint.setColor(Color.parseColor(computerStoneColor));
+        displayMessagePaint = new Paint();
+        displayMessagePaint.setAntiAlias(true);
+        displayMessagePaint.setTextAlign(Paint.Align.CENTER);
+        displayMessagePaint.setTextSize(2 * canvasMargin);
+        displayMessagePaint.setColor(Color.parseColor(computerStoneColor));
+
+        scoreMessagePaint = new Paint();
+        scoreMessagePaint.setAntiAlias(true);
+        scoreMessagePaint.setTextAlign(Paint.Align.CENTER);
+        scoreMessagePaint.setTextSize((float) 1.5 * canvasMargin);
+        scoreMessagePaint.setColor(Color.parseColor(userStoneColor));
 
         tripletPaint = new Paint();
         tripletPaint.setAntiAlias(true);
@@ -125,6 +141,9 @@ public class CanvasBoardView extends View {
         junctionsArray = new Junction[25];
 
         gameUtility = new GameUtility();
+        this.context = context;
+        vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        mediaPlayer = MediaPlayer.create(context, R.raw.served);
     }
 
     public CanvasBoardView(Context context, AttributeSet attrs) {
@@ -182,8 +201,6 @@ public class CanvasBoardView extends View {
         }
         if (!userTurn) {
             playComputer();
-        } else {
-            //todo play sound based on game status and/or vibrate
         }
     }
 
@@ -321,13 +338,12 @@ public class CanvasBoardView extends View {
                     displayMessage = DisplayMessage.PICK_STONE;
                     gameStatus = GameStatus.PICK_STONE;
                     userTurn = false;
+                    if (isTripletFit(junctionNo, playerUser)) {
+                        userEatsStone();
+                    }
                     gameStatusChanged = true;
                 }
-                if (isTripletFit(junctionNo, playerUser)) {
-                    displayMessage = DisplayMessage.EAT_STONE;
-                    gameStatus = GameStatus.EAT_STONE;
-                    userTurn = true;
-                }
+
             }
         } else if (gameStatus.equals(GameStatus.PICK_STONE)) {
             if (occupiedBy != null && occupiedBy.equals(playerUser)) {
@@ -358,9 +374,7 @@ public class CanvasBoardView extends View {
                 }
                 userTurn = false;
                 if (isTripletFit(junctionNo, playerUser)) {
-                    displayMessage = DisplayMessage.EAT_STONE;
-                    gameStatus = GameStatus.EAT_STONE;
-                    userTurn = true;
+                    userEatsStone();
                 }
                 gameStatusChanged = true;
             }
@@ -388,6 +402,7 @@ public class CanvasBoardView extends View {
 
         // updating game
         if (gameStatusChanged) {
+            playSoundAndVibration(playerUser);
             invalidate();
         }
     }
@@ -397,10 +412,19 @@ public class CanvasBoardView extends View {
         int height = canvas.getHeight();
         int outerSquareSideLength = 6 * unitLength;
         int x = width / 2;
-        int y = outerSquareSideLength +
+
+        // y1 is for displayMessage
+        int y1 = outerSquareSideLength +
                 (height - canvasMargin - outerSquareSideLength) / 2;
-        y = y - (int) (textPaint.ascent() + textPaint.descent()) / 2;
-        canvas.drawText(displayMessage, x, y, textPaint);
+
+        // y2 is for score Message
+        int y2 = y1 +
+                (height - canvasMargin - outerSquareSideLength) / 4;
+        y1 = y1 - (int) (displayMessagePaint.ascent() + displayMessagePaint.descent()) / 2;
+        y2 = y2 - (int) (scoreMessagePaint.ascent() + scoreMessagePaint.descent()) / 2;
+
+        canvas.drawText(displayMessage, x, y1, displayMessagePaint);
+        canvas.drawText(getScoreMessage(), x, y2, scoreMessagePaint);
     }
 
     private void drawBoard() {
@@ -417,6 +441,12 @@ public class CanvasBoardView extends View {
 
     private String getUserStoneBalanceMessage() {
         return DisplayMessage.DRAW_STONE + userStonesLeft;
+    }
+
+    private String getScoreMessage() {
+        String message = "You: " + userHealth + "/" + userStonesLeft
+                + ", Computer: " + computerHealth + "/" + computerStonesLeft;
+        return message;
     }
 
     private void playComputer() {
@@ -583,10 +613,28 @@ public class CanvasBoardView extends View {
 
     private void computerEatsStone() {
         Log.d(TAG, "computer eats a stone");
+        playSoundAndVibration(playerComputer);
+        if (gameUtility.canEatPlayerStone(junctionsArray,
+                playerComputer, activeTripletsList)) {
 
-        // todo play a sound and or vibration
-        // todo what if opponent player has all stones locked i.e. fit
-        userHealth--;
+            // todo eat a stone
+            userHealth--;
+        } else {
+            computerHealth++;
+        }
+    }
+
+    private void userEatsStone() {
+
+        // if user can eat stone, it's fine. else userHealth will increase
+        if (gameUtility.canEatPlayerStone(junctionsArray,
+                playerUser, activeTripletsList)) {
+            displayMessage = DisplayMessage.EAT_STONE;
+            gameStatus = GameStatus.EAT_STONE;
+            userTurn = true;
+        } else {
+            userHealth++;
+        }
     }
 
     private void setWinnerMessage(String winner) {
@@ -622,6 +670,45 @@ public class CanvasBoardView extends View {
             userTurn = true;
         }
         invalidate();
+    }
+
+    private void playSoundAndVibration(String player) {
+        if (player.equals(playerUser)) {
+            if (gameStatus.equals(GameStatus.EAT_STONE)) {
+                playSound();
+                playVibration(500);
+            } else if (gameStatus.equals(GameStatus.DRAW_STONE)) {
+                playSound();
+            } else if (gameStatus.equals(GameStatus.PLACE_STONE)) {
+                playVibration(100);
+            }
+        } else {
+            playSound();
+            playVibration(500);
+        }
+    }
+
+    private void playVibration(long duration) {
+        if (settingsPreferences.getBoolean("fitto_vibration_enabled", true)) {
+            try {
+                vibrator.vibrate(duration);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    private void playSound() {
+        if (settingsPreferences.getBoolean("fitto_sound_enabled", true)) {
+            try {
+                if (!mediaPlayer.isPlaying()) {
+                    mediaPlayer.start();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void undoMove() {

@@ -585,4 +585,18 @@ public class GameUtility {
         }
         activeTripletsList.add(tripletToBeAdded);
     }
+
+    public boolean canEatPlayerStone(Junction junctionsArray[],
+                                     String player,
+                                     List<Triplet> activeTripletsList) {
+        for (int i = 1; i < junctionsArray.length; i++) {
+            if (junctionsArray[i].getOccupiedBy() != null
+                    && junctionsArray[i].getOccupiedBy().equals(player)) {
+                if (!isPartOfTriplet(activeTripletsList, i)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
