@@ -84,7 +84,8 @@ public class GameUtility {
         return boardPath;
     }
 
-    public int getUserTouchedJunction(float x, float y, Junction junctionsArray[], int unitLength) {
+    public int getUserTouchedJunction(float x, float y, Junction junctionsArray[],
+                                      int unitLength) {
 
         // finding corresponding junction from junctionsArray
         int junctionNo = -1;
@@ -450,13 +451,13 @@ public class GameUtility {
      * @param player
      * @return list of all junctions, where by drawing a stone a dual triplet will be formed
      */
-    public List<Integer> getAllJunctionNumbersToFitFutureDualTriplet(Junction junctionsArray[],
-                                                                     FitTriplet fitTripletsArray[],
-                                                                     String player,
-                                                                     int latestPlayerStoneJunctionNo) {
+    public List<Integer> getAllJunctionNumbersToFitFutureDualTriplet(
+            Junction junctionsArray[],
+            FitTriplet fitTripletsArray[], String player, int latestPlayerStoneJunctionNo) {
         List<Integer> junctionNumbersList = new ArrayList<>();
         if (latestPlayerStoneJunctionNo > 0) {
-            Triplet tripletsArray[] = fitTripletsArray[latestPlayerStoneJunctionNo].getTripletsArray();
+            Triplet tripletsArray[] =
+                    fitTripletsArray[latestPlayerStoneJunctionNo].getTripletsArray();
             for (int j = 0; j < tripletsArray.length; j++) {
                 Triplet triplet = tripletsArray[j];
 
@@ -488,19 +489,19 @@ public class GameUtility {
                         continue;
                     }
                 }
-                if (junctionNo1 != latestPlayerStoneJunctionNo /*&& isVacant(junctionNo1, junctionsArray)*/) {
+                if (junctionNo1 != latestPlayerStoneJunctionNo) {
                     if (areTripletsOneOccupiedAndTwoVacant(junctionNo1, latestPlayerStoneJunctionNo,
                             junctionsArray, fitTripletsArray, player)) {
                         junctionNumbersList.add(junctionNo1);
                     }
                 }
-                if (junctionNo2 != latestPlayerStoneJunctionNo /*&& isVacant(junctionNo2, junctionsArray)*/) {
+                if (junctionNo2 != latestPlayerStoneJunctionNo) {
                     if (areTripletsOneOccupiedAndTwoVacant(junctionNo2, latestPlayerStoneJunctionNo,
                             junctionsArray, fitTripletsArray, player)) {
                         junctionNumbersList.add(junctionNo2);
                     }
                 }
-                if (junctionNo3 != latestPlayerStoneJunctionNo /*&& isVacant(junctionNo3, junctionsArray)*/) {
+                if (junctionNo3 != latestPlayerStoneJunctionNo) {
                     if (areTripletsOneOccupiedAndTwoVacant(junctionNo3, latestPlayerStoneJunctionNo,
                             junctionsArray, fitTripletsArray, player)) {
                         junctionNumbersList.add(junctionNo3);
@@ -602,7 +603,7 @@ public class GameUtility {
     }
 
     public void addTripletToActiveTripletsList(Triplet tripletToBeAdded,
-                                                    List<Triplet> activeTripletsList) {
+                                               List<Triplet> activeTripletsList) {
         for (int i = 0; i < activeTripletsList.size(); i++) {
             Triplet triplet = activeTripletsList.get(i);
             if (triplet.equals(tripletToBeAdded)) {
@@ -746,12 +747,13 @@ public class GameUtility {
         return junctionsListFormingDualTriplet;
     }
 
-    private void addJunctionNumberOfOneOccupiedAndTwoVacantTriplet(int junctionNo,
-                                                       int excludedJunctionNo,
-                                                       Junction junctionsArray[],
-                                                       FitTriplet fitTripletsArray[],
-                                                       String player,
-                                                       List<Integer> junctionsListFormingDualTriplet) {
+    private void addJunctionNumberOfOneOccupiedAndTwoVacantTriplet(
+            int junctionNo,
+            int excludedJunctionNo,
+            Junction junctionsArray[],
+            FitTriplet fitTripletsArray[],
+            String player, List<Integer> junctionsListFormingDualTriplet) {
+
         Triplet tripletsArray[] = fitTripletsArray[junctionNo].getTripletsArray();
         for (int i = 0; i < tripletsArray.length; i++) {
             Triplet triplet = tripletsArray[i];
@@ -799,5 +801,52 @@ public class GameUtility {
                 }
             }
         }
+    }
+
+    public List<Triplet> getTwoOccupiedByComputerAndOneOccupiedByUserTripletsList(
+            Junction junctionsArray[],
+            FitTriplet fitTripletsArray[], String playerUser, String playerComputer) {
+        List<Triplet> twoOccupiedByComputerAndOneOccupiedByUserTripletsList =
+                new ArrayList<>();
+        for (int i = 1; i < fitTripletsArray.length; i++) {
+            Triplet tripletsArray[] = fitTripletsArray[i].getTripletsArray();
+            for (int j = 0; j < tripletsArray.length; j++) {
+                Triplet triplet = tripletsArray[j];
+                int junctionNo1 = triplet.getJunctionNo1();
+                int junctionNo2 = triplet.getJunctionNo2();
+                int junctionNo3 = triplet.getJunctionNo3();
+                if (!isVacant(junctionNo1, junctionsArray)
+                        && !isVacant(junctionNo2, junctionsArray)
+                        && !isVacant(junctionNo3, junctionsArray)) {
+                    if (junctionsArray[junctionNo1].getOccupiedBy().equals(playerUser)) {
+                        if (junctionsArray[junctionNo2].getOccupiedBy().equals(playerComputer)) {
+                            if (junctionsArray[junctionNo3].getOccupiedBy().equals(playerComputer)) {
+                                addTripletToList(
+                                        twoOccupiedByComputerAndOneOccupiedByUserTripletsList,
+                                        triplet);
+                            }
+                        }
+                    } else if (junctionsArray[junctionNo2].getOccupiedBy().equals(playerUser)) {
+                        if (junctionsArray[junctionNo1].getOccupiedBy().equals(playerComputer)) {
+                            if (junctionsArray[junctionNo3].getOccupiedBy().equals(playerComputer)) {
+                                addTripletToList(
+                                        twoOccupiedByComputerAndOneOccupiedByUserTripletsList,
+                                        triplet);
+                            }
+                        }
+                    } else if (junctionsArray[junctionNo3].getOccupiedBy().equals(playerUser)) {
+                        if (junctionsArray[junctionNo2].getOccupiedBy().equals(playerComputer)) {
+                            if (junctionsArray[junctionNo1].getOccupiedBy().equals(playerComputer)) {
+                                addTripletToList(
+                                        twoOccupiedByComputerAndOneOccupiedByUserTripletsList,
+                                        triplet);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return twoOccupiedByComputerAndOneOccupiedByUserTripletsList;
+
     }
 }
