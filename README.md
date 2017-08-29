@@ -13,6 +13,9 @@ Turn based Android game between user and computer on a grid board using Artifici
 * All the above rules equally applies to computer.
 * Player which make opponent player run out of stones win.
 
+### Android app link
+https://github.com/varunon9/Fitto/blob/master/app/app-release.apk
+
 ### Screenshots:
 
 |  |  |
