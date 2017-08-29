@@ -21,7 +21,7 @@ https://github.com/varunon9/Fitto/blob/master/app/app-release.apk
 |  |  |
 | --- | --- |
 |![Play Board](./screenshots/board.png) | ![Settings Screen](./screenshots/settings.png)|
-|![Instructions Screen](./screenshots/instructions.png) | !|
+|![Instructions Screen](./screenshots/instructions.png) | ![Game Progress](./screenshots/game.png)|
 
 ### How to contribute?
 * Fork this repository.

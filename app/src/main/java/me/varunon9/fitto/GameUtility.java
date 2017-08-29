@@ -921,4 +921,36 @@ public class GameUtility {
             integersList.add(num);
         }
     }
+
+    public List<Integer> getJunctionAdjacentJunctionNumbersList(int junctionNo) {
+        List<Integer> junctionAdjacentJunctionNumbersList = new ArrayList<>();
+        int adjacentJunctionNo;
+
+        // adjacentJunctionNo is +1, -1, +8, -8, +7, -7 with necessary validations
+
+        for (int k = 0; k < 3; k++) {
+            int distance = 1;
+
+            switch (k) {
+                case 1:
+                    distance = 8;
+                    break;
+                case 2:
+                    distance = 7;
+                    break;
+                default: ;
+            }
+
+            adjacentJunctionNo = junctionNo + distance;
+            if (isAdjacent(junctionNo, adjacentJunctionNo)) {
+                addIntegerToList(junctionAdjacentJunctionNumbersList, adjacentJunctionNo);
+            }
+
+            adjacentJunctionNo = junctionNo - distance;
+            if (isAdjacent(junctionNo, adjacentJunctionNo)) {
+                addIntegerToList(junctionAdjacentJunctionNumbersList, adjacentJunctionNo);
+            }
+        }
+        return junctionAdjacentJunctionNumbersList;
+    }
 }
