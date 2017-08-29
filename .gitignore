@@ -4,10 +4,10 @@
 .DS_Store
 /captures
 .externalNativeBuild
-/app/build/generated/
-/app/build/intermediates/
-/app/build/tmp/
-/build
+app/build/generated/
+app/build/intermediates/
+app/build/tmp/
+build
 
 # Intellij
 *.iml

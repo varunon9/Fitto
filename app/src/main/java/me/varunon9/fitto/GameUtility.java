@@ -297,6 +297,14 @@ public class GameUtility {
     }
 
     public boolean isAdjacent(int junctionNo1, int junctionNo2) {
+        
+        // validations
+        if (junctionNo1 <= 0 || junctionNo2 <= 0) {
+            return false;
+        }
+        if (junctionNo1 >= 25 || junctionNo2 >= 25) {
+            return false;
+        }
         int difference = Math.abs(junctionNo1 - junctionNo2);
         if (difference == 8) {
             return true;
@@ -847,6 +855,70 @@ public class GameUtility {
             }
         }
         return twoOccupiedByComputerAndOneOccupiedByUserTripletsList;
+    }
 
+    /**
+     * This method will return list of all junctionNo adjacent to triplet occupied by player
+     * Returned list will contains vacant/non-vacant junctions including that of triplet
+     * @param activeTripletsList
+     * @param junctionsArray
+     * @param player
+     * @return
+     */
+    public List<Integer> getTripletsAdjacentJunctionNumbersList(List<Triplet> activeTripletsList,
+                                                                Junction junctionsArray[],
+                                                                String player) {
+        List<Integer> tripletsAdjacentJunctionNumbersList = new ArrayList<>();
+        for (int i = 0; i < activeTripletsList.size(); i++) {
+            Triplet triplet = activeTripletsList.get(i);
+            int junctionNo1 = triplet.getJunctionNo1();
+            int junctionNo2 = triplet.getJunctionNo2();
+            int junctionNo3 = triplet.getJunctionNo3();
+
+            int junctionNumbersArray[] = {junctionNo1, junctionNo2, junctionNo3};
+
+            for (int j = 0; j < junctionNumbersArray.length; j++) {
+                int junctionNo = junctionNumbersArray[j];
+
+                // check if given player held this triplet
+                // (all 3 junctions will be occupied by same player)
+                if (junctionsArray[junctionNo].getOccupiedBy().equals(player)) {
+                    int adjacentJunctionNo;
+
+                    // adjacentJunctionNo is +1, -1, +8, -8, +7, -7 with necessary validations
+
+                    for (int k = 0; k < 3; k++) {
+                        int distance = 1;
+
+                        switch (k) {
+                            case 1:
+                                distance = 8;
+                                break;
+                            case 2:
+                                distance = 7;
+                                break;
+                            default: ;
+                        }
+
+                        adjacentJunctionNo = junctionNo + distance;
+                        if (isAdjacent(junctionNo, adjacentJunctionNo)) {
+                            addIntegerToList(tripletsAdjacentJunctionNumbersList, adjacentJunctionNo);
+                        }
+
+                        adjacentJunctionNo = junctionNo - distance;
+                        if (isAdjacent(junctionNo, adjacentJunctionNo)) {
+                            addIntegerToList(tripletsAdjacentJunctionNumbersList, adjacentJunctionNo);
+                        }
+                    }
+                }
+            }
+        }
+        return tripletsAdjacentJunctionNumbersList;
+    }
+    
+    private void addIntegerToList(List<Integer> integersList, int num) {
+        if (!integersList.contains(num)) {
+            integersList.add(num);
+        }
     }
 }

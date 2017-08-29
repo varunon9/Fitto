@@ -483,10 +483,10 @@ public class CanvasBoardView extends View {
         List<Integer> junctionsListToFitDualTripletComputer =
                 gameUtility.getAllJunctionNumbersToFitFutureDualTriplet(junctionsArray,
                         fitTripletsArray, playerComputer, latestComputerStoneJunctionNo);
-        List <Integer> junctionsListFormingDualTripletUser =
+        List<Integer> junctionsListFormingDualTripletUser =
                 gameUtility.getJunctionsListFormingDualTriplet(junctionsArray,
                         fitTripletsArray, playerUser, latestUserStoneJunctionNo);
-        List <Integer> junctionsListFormingDualTripletComputer =
+        List<Integer> junctionsListFormingDualTripletComputer =
                 gameUtility.getJunctionsListFormingDualTriplet(junctionsArray,
                         fitTripletsArray, playerComputer, latestComputerStoneJunctionNo);
 
@@ -497,6 +497,10 @@ public class CanvasBoardView extends View {
         List<Triplet> twoOccupiedByComputerAndOneOccupiedByUserTripletsList =
                 gameUtility.getTwoOccupiedByComputerAndOneOccupiedByUserTripletsList(junctionsArray,
                         fitTripletsArray, playerUser, playerComputer);
+
+        List<Integer> tripletsAdjacentJunctionNumbersListComputer =
+                gameUtility.getTripletsAdjacentJunctionNumbersList(activeTripletsList,
+                        junctionsArray, playerComputer);
 
         if (computerStonesLeft > 0) {
 
@@ -513,6 +517,7 @@ public class CanvasBoardView extends View {
                 computerEatsStone(twoOccupiedAndOneVacantTripletsListUser,
                         junctionsListFormingDualTripletUser,
                         twoOccupiedByComputerAndOneOccupiedByUserTripletsList,
+                        tripletsAdjacentJunctionNumbersListComputer,
                         junctionNo);
             } else {
 
@@ -546,11 +551,49 @@ public class CanvasBoardView extends View {
                         int junctionNo = junctionsListToFitDualTripletComputer.get(0);
                         computerDrawsOrPlaceStone(junctionNo);
                     } else {
-                        Log.d(TAG, "computer places stone at opposite corner in same square "
-                                + "as that of user");
+                        boolean placedStone = false;
 
-                        // draw a stone in same square as that of user and at opposite corner
-                        // todo
+                        // check if user placed stone at a corner
+                        if (latestUserStoneJunctionNo % 2 == 1) {
+                            int oppositeJunctionNo = latestUserStoneJunctionNo + 4;
+                            if ((latestUserStoneJunctionNo > 4 && latestUserStoneJunctionNo < 8)
+                                    || (latestUserStoneJunctionNo > 12
+                                            && latestUserStoneJunctionNo < 16)
+                                    || (latestUserStoneJunctionNo > 20
+                                            && latestUserStoneJunctionNo < 24)) {
+
+                                oppositeJunctionNo = latestUserStoneJunctionNo - 4;
+                            }
+                            if (gameUtility.isVacant(oppositeJunctionNo, junctionsArray)) {
+                                Log.d(TAG, "computer places stone at opposite corner in " +
+                                        "same square as that of user");
+                                computerDrawsOrPlaceStone(oppositeJunctionNo);
+                                placedStone = true;
+                            }
+                        }
+
+                        if (!placedStone) {
+
+                            // place stone starting from 1st and on odd position
+                            for (int i = 1; i < junctionsArray.length; i += 2) {
+                                if (gameUtility.isVacant(i, junctionsArray)) {
+                                    computerDrawsOrPlaceStone(i);
+                                    placedStone = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!placedStone) {
+
+                            // place stone starting from 1st and on even position (last option)
+                            for (int i = 1; i < junctionsArray.length; i += 2) {
+                                if (gameUtility.isVacant(i, junctionsArray)) {
+                                    computerDrawsOrPlaceStone(i);
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -598,8 +641,6 @@ public class CanvasBoardView extends View {
 
     /**
      * This method checks if newly made move fit any triplet
-     * this method is also responsible for setting all junctions (affected by newly made move)
-     * to update value isPartOfTriplet
      * @param junctionNo
      * @param player
      * @return
@@ -644,12 +685,11 @@ public class CanvasBoardView extends View {
     }
 
     private void computerEatsStone(List<Triplet> twoOccupiedAndOneVacantTripletsListUser,
-                                   List <Integer> junctionsListFormingDualTripletUser,
+                                   List<Integer> junctionsListFormingDualTripletUser,
                                    List<Triplet> twoOccupiedByComputerAndOneOccupiedByUserTripletsList,
+                                   List<Integer> tripletsAdjacentJunctionNumbersListComputer,
                                    int junctionNoWhereTripletFormed) {
-        if (gameUtility.canEatPlayerStone(junctionsArray,
-                playerUser, activeTripletsList)) {
-            Log.d(TAG, "computer eats a stone");
+        if (gameUtility.canEatPlayerStone(junctionsArray, playerUser, activeTripletsList)) {
             boolean ateStone = false;
 
             // eat a stone from two stones triplet
@@ -734,7 +774,26 @@ public class CanvasBoardView extends View {
                 } else {
 
                     // eat a stone adjacent to junctions where computer formed a triplet
-                    // consider adjacent junctions of triplet formed
+                    if (!tripletsAdjacentJunctionNumbersListComputer.isEmpty()) {
+                        for (int i = 0;
+                             i < tripletsAdjacentJunctionNumbersListComputer.size(); i++) {
+                            int adjacentJunctionNo =
+                                    tripletsAdjacentJunctionNumbersListComputer.get(i);
+
+                            // check if it is not vacant and not occupied by computer
+                            if (junctionsArray[adjacentJunctionNo].getOccupiedBy() != null
+                                    && !junctionsArray[adjacentJunctionNo].getOccupiedBy()
+                                                                          .equals(playerComputer)) {
+                                if (!gameUtility.isPartOfTriplet(activeTripletsList,
+                                        adjacentJunctionNo)) {
+
+                                    computerEatsStone(adjacentJunctionNo);
+                                    ateStone = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
             }
             if (!ateStone) {
@@ -745,7 +804,7 @@ public class CanvasBoardView extends View {
                     if (junction.getOccupiedBy() != null
                             && junction.getOccupiedBy().equals(playerUser)) {
                         if (!gameUtility.isPartOfTriplet(activeTripletsList, i)) {
-                            computerEatsStone(latestUserStoneJunctionNo);
+                            computerEatsStone(i);
                             break;
                         }
                     }
@@ -757,6 +816,7 @@ public class CanvasBoardView extends View {
     }
 
     private void computerEatsStone(int junctionNo) {
+        Log.d(TAG, "computer eats a stone at junction No: " + junctionNo);
 
         // we are sure that a stone can be eaten from given junctionNo
         junctionsArray[junctionNo].setOccupiedBy("");
