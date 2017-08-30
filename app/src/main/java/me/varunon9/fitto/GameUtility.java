@@ -462,6 +462,7 @@ public class GameUtility {
     public List<Integer> getAllJunctionNumbersToFitFutureDualTriplet(
             Junction junctionsArray[],
             FitTriplet fitTripletsArray[], String player, int latestPlayerStoneJunctionNo) {
+
         List<Integer> junctionNumbersList = new ArrayList<>();
         if (latestPlayerStoneJunctionNo > 0) {
             Triplet tripletsArray[] =
@@ -483,36 +484,36 @@ public class GameUtility {
 
                 if (junctionNo1 == latestPlayerStoneJunctionNo) {
                     if (!isVacant(junctionNo2, junctionsArray)
-                            && !isVacant(junctionNo3, junctionsArray)) {
+                            || !isVacant(junctionNo3, junctionsArray)) {
                         continue;
                     }
                 } else if (junctionNo2 == latestPlayerStoneJunctionNo) {
                     if (!isVacant(junctionNo1, junctionsArray)
-                            && !isVacant(junctionNo3, junctionsArray)) {
+                            || !isVacant(junctionNo3, junctionsArray)) {
                         continue;
                     }
                 } else if (junctionNo3 == latestPlayerStoneJunctionNo) {
                     if (!isVacant(junctionNo1, junctionsArray)
-                            && !isVacant(junctionNo2, junctionsArray)) {
+                            || !isVacant(junctionNo2, junctionsArray)) {
                         continue;
                     }
                 }
                 if (junctionNo1 != latestPlayerStoneJunctionNo) {
                     if (areTripletsOneOccupiedAndTwoVacant(junctionNo1, latestPlayerStoneJunctionNo,
                             junctionsArray, fitTripletsArray, player)) {
-                        junctionNumbersList.add(junctionNo1);
+                        addIntegerToList(junctionNumbersList, junctionNo1);
                     }
                 }
                 if (junctionNo2 != latestPlayerStoneJunctionNo) {
                     if (areTripletsOneOccupiedAndTwoVacant(junctionNo2, latestPlayerStoneJunctionNo,
                             junctionsArray, fitTripletsArray, player)) {
-                        junctionNumbersList.add(junctionNo2);
+                        addIntegerToList(junctionNumbersList, junctionNo2);
                     }
                 }
                 if (junctionNo3 != latestPlayerStoneJunctionNo) {
                     if (areTripletsOneOccupiedAndTwoVacant(junctionNo3, latestPlayerStoneJunctionNo,
                             junctionsArray, fitTripletsArray, player)) {
-                        junctionNumbersList.add(junctionNo3);
+                        addIntegerToList(junctionNumbersList, junctionNo3);
                     }
                 }
             }
