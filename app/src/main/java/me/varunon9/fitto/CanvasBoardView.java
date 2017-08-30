@@ -8,9 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
@@ -343,6 +340,15 @@ public class CanvasBoardView extends View {
                     }
                     gameStatusChanged = true;
                 }
+
+            } else if (junctionNo == pickedStoneJunctionNo) {
+
+                // if it is picked stone then unpick it
+                junction.setPicked(false);
+                displayMessage = DisplayMessage.PICK_STONE;
+                gameStatus = GameStatus.PICK_STONE;
+                userTurn = true;
+                gameStatusChanged = true;
 
             }
         } else if (gameStatus.equals(GameStatus.PICK_STONE)) {

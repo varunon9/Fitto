@@ -22,6 +22,7 @@ Turn based Android game between user and computer on a grid board using Artifici
 | --- | --- |
 |![Play Board](./screenshots/board.png) | ![Settings Screen](./screenshots/settings.png)|
 |![Instructions Screen](./screenshots/instructions.png) | ![Game Progress](./screenshots/game.png)|
+|![User Won](./screenshots/user-won.png) | ![Computer Won](./screenshots/computer-won.png)|
 
 ### How to contribute?
 * Fork this repository.
