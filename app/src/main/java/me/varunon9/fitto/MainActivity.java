@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_play) {
+        if (id == R.id.action_play_with_computer) {
             mViewPager.setCurrentItem(0, true);
             return true;
         } else if (id == R.id.action_settings) {
@@ -86,6 +86,9 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.action_instructions) {
             mViewPager.setCurrentItem(2, true);
+            return true;
+        } else if (id == R.id.action_play_with_player) {
+            mViewPager.setCurrentItem(3, true);
             return true;
         }
 
@@ -109,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             Fragment fragment = null;
             switch(position) {
                 case 0: {
-                    fragment = new PlayFragment();
+                    fragment = new PlayWithComputerFragment();
                     break;
                 }
                 case 1: {
@@ -120,14 +123,18 @@ public class MainActivity extends AppCompatActivity {
                     fragment = new InstructionsFragment();
                     break;
                 }
+                case 3: {
+                    fragment = new PlayWithPlayerFragment();
+                    break;
+                }
             }
             return fragment;
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            // Show total 4 pages.
+            return 4;
         }
 
         @Override
@@ -139,6 +146,8 @@ public class MainActivity extends AppCompatActivity {
                     return getString(R.string.action_settings);
                 case 2:
                     return getString(R.string.action_instructions);
+                case 3:
+                    return getString(R.string.app_name);
             }
             return null;
         }

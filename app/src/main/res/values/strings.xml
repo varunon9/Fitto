@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">Fitto</string>
-    <string name="action_play">Play</string>
+    <string name="action_play_with_computer">Play with Computer</string>
     <string name="action_settings">Settings</string>
     <string name="action_instructions">Instructions</string>
+    <string name="action_play_with_player">Play with Player</string>
 
     <string-array name="entries_game_level_list_preference">
         <item>Easy</item>
@@ -19,4 +20,12 @@
     <string name="user_stone_color">#9C27B0</string>
     <string name="player_user">user</string>
     <string name="player_computer">computer</string>
+
+    <string name="player1_stone_color">#303F9F</string>
+    <string name="player2_stone_color">#9C27B0</string>
+    <string name="player1">Player 1</string>
+    <string name="player2">Player 2</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

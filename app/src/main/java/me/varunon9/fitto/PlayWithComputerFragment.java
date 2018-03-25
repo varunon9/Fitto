@@ -12,10 +12,10 @@ import android.widget.Button;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PlayFragment extends Fragment {
+public class PlayWithComputerFragment extends Fragment {
 
 
-    public PlayFragment() {
+    public PlayWithComputerFragment() {
         // Required empty public constructor
     }
 
@@ -24,12 +24,12 @@ public class PlayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_play, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_play_with_computer, container, false);
         Button restartButton = (Button) rootView.findViewById(R.id.restartButton);
         Button undoButton = (Button) rootView.findViewById(R.id.undoButton);
-        CanvasBoardView canvasBoardView =
-                (CanvasBoardView) rootView.findViewById(R.id.canvasBoardView);
-        canvasBoardView.initialiseButtons(restartButton, undoButton);
+        ComputerCanvasBoardView computerCanvasBoardView =
+                (ComputerCanvasBoardView) rootView.findViewById(R.id.computerCanvasBoardView);
+        computerCanvasBoardView.initialiseButtons(restartButton, undoButton);
         return rootView;
     }
 

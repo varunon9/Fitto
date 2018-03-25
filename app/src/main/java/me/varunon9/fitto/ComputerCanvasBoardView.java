@@ -24,7 +24,7 @@ import java.util.List;
  * Created by varun on 20/8/17.
  */
 
-public class CanvasBoardView extends View {
+public class ComputerCanvasBoardView extends View {
 
     private Paint userStonePaint;
     private Paint computerStonePaint;
@@ -59,7 +59,7 @@ public class CanvasBoardView extends View {
     private List<Triplet> activeTripletsList;
     private Context context;
 
-    private static final String TAG = "CanvasBoardView";
+    private static final String TAG = "ComputerCanvasBoardView";
 
     // settings preferences
     private SharedPreferences settingsPreferences;
@@ -75,15 +75,15 @@ public class CanvasBoardView extends View {
 
     private void init(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs,
-                R.styleable.CanvasBoardView, 0, 0);
-        playerUser = typedArray.getString(R.styleable.CanvasBoardView_playerUser);
-        playerComputer = typedArray.getString(R.styleable.CanvasBoardView_playerComputer);
-        computerStoneColor = typedArray.getString(R.styleable.CanvasBoardView_computerStoneColor);
-        userStoneColor = typedArray.getString(R.styleable.CanvasBoardView_userStoneColor);
+                R.styleable.ComputerCanvasBoardView, 0, 0);
+        playerUser = typedArray.getString(R.styleable.ComputerCanvasBoardView_playerUser);
+        playerComputer = typedArray.getString(R.styleable.ComputerCanvasBoardView_playerComputer);
+        computerStoneColor = typedArray.getString(R.styleable.ComputerCanvasBoardView_computerStoneColor);
+        userStoneColor = typedArray.getString(R.styleable.ComputerCanvasBoardView_userStoneColor);
         maximumInitialStones =
-                typedArray.getInt(R.styleable.CanvasBoardView_maximumInitialStones, 8);
-        stoneRadius = typedArray.getInt(R.styleable.CanvasBoardView_stoneRadius, 20);
-        canvasMargin = typedArray.getInt(R.styleable.CanvasBoardView_margin, 20);
+                typedArray.getInt(R.styleable.ComputerCanvasBoardView_maximumInitialStones, 8);
+        stoneRadius = typedArray.getInt(R.styleable.ComputerCanvasBoardView_stoneRadius, 20);
+        canvasMargin = typedArray.getInt(R.styleable.ComputerCanvasBoardView_margin, 20);
         userStonePaint = new Paint();
         userStonePaint.setAntiAlias(true);
         userStonePaint.setDither(true);
@@ -143,7 +143,7 @@ public class CanvasBoardView extends View {
         mediaPlayer = MediaPlayer.create(context, R.raw.served);
     }
 
-    public CanvasBoardView(Context context, AttributeSet attrs) {
+    public ComputerCanvasBoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         // disable hardware acceleration

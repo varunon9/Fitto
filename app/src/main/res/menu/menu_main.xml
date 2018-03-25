@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="me.varunon9.fitto.MainActivity">
     <item
-        android:id="@+id/action_play"
+        android:id="@+id/action_play_with_computer"
         android:orderInCategory="100"
-        android:title="@string/action_play"
+        android:title="@string/action_play_with_computer"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_settings"
@@ -16,5 +16,10 @@
         android:id="@+id/action_instructions"
         android:orderInCategory="300"
         android:title="@string/action_instructions"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_play_with_player"
+        android:orderInCategory="400"
+        android:title="@string/action_play_with_player"
         app:showAsAction="never" />
 </menu>
