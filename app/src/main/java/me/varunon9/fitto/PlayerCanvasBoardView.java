@@ -48,6 +48,7 @@ public class PlayerCanvasBoardView extends View {
     private int canvasMargin;
     private int stoneRadius;
     private boolean player1Turn;
+    private boolean player2Turn;
     private String displayMessage;
     private int player2Health;
     private int player1Health;
@@ -165,7 +166,7 @@ public class PlayerCanvasBoardView extends View {
             }
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
-                userTouchesBoard(x, y);
+                playerTouchesBoard(x, y);
                 break;
             }
         }
@@ -192,13 +193,8 @@ public class PlayerCanvasBoardView extends View {
         drawBoard();
         placeStones(junctionsArray, canvas);
         paintTriplets();
+        displayMessage = DisplayMessage.PLAYER1_DRAW_STONE;
         drawMessage();
-        if (gameWon) {
-            return;
-        }
-        if (!player1Turn) {
-            playComputer();
-        }
     }
 
     public void initialiseButtons(Button restartButton, Button undoButton) {
@@ -268,9 +264,9 @@ public class PlayerCanvasBoardView extends View {
             int y = junctionsArray[i].getY();
 
             if (occupiedBy.equals(player1)) {
-                drawUserStone(canvas, x, y);
+                drawPlayer1Stone(canvas, x, y);
             } else if (occupiedBy.equals(player2)) {
-                drawComputerStone(canvas, x, y);
+                drawPlayer2Stone(canvas, x, y);
             }
 
             // if picked stone, draw it common
@@ -280,11 +276,11 @@ public class PlayerCanvasBoardView extends View {
         }
     }
 
-    private void drawComputerStone(Canvas canvas, int x, int y) {
+    private void drawPlayer2Stone(Canvas canvas, int x, int y) {
         drawStone(canvas, x, y, player2StonePaint);
     }
 
-    private void drawUserStone(Canvas canvas, int x, int y) {
+    private void drawPlayer1Stone(Canvas canvas, int x, int y) {
         drawStone(canvas, x, y, player1StonePaint);
     }
 
@@ -292,23 +288,17 @@ public class PlayerCanvasBoardView extends View {
         canvas.drawCircle(x, y, stoneRadius, paint);
     }
 
-    private void userTouchesBoard(float x, float y) {
+    private void playerTouchesBoard(float x, float y) {
 
         // game is over
         if (gameWon) {
             return;
         }
 
-        // we don't care if it's computer's turn and user is touching board
-        if (!player1Turn) {
-            Log.d(TAG, "Not user turn");
-            return;
-        }
-
         int junctionNo = gameUtility.getUserTouchedJunction(x, y, junctionsArray, unitLength);
-        Log.d(TAG, "User Touched board at junction No: " + junctionNo);
+        Log.d(TAG, "Player Touched board at junction No: " + junctionNo);
 
-        // if no junction found, i.e. user touched somewhere else
+        // if no junction found, i.e. player touched somewhere else
         if (junctionNo < 0) {
             return;
         }
@@ -325,18 +315,28 @@ public class PlayerCanvasBoardView extends View {
                 // check if junctionNo is adjacent to pickedStoneNo
                 if (gameUtility.isAdjacent(junctionNo, pickedStoneJunctionNo)) {
 
-                    // valid position, user can place stone
+                    // valid position, player can place stone
                     junctionsArray[pickedStoneJunctionNo].setPicked(false);
                     junctionsArray[pickedStoneJunctionNo].setOccupiedBy("");
-                    userDrawsOrPlaceStone(junctionNo);
+                    if (player1Turn) {
+                        player1DrawsOrPlaceStone(junctionNo);
+                    } else {
+                        player2DrawsOrPlaceStone(junctionNo);
+                    }
 
                     // if picked stone was part of triplet, disable it
                     disableTripletFit(pickedStoneJunctionNo);
-                    displayMessage = DisplayMessage.PICK_STONE;
+
+                    if (player1Turn) {
+                        displayMessage = DisplayMessage.PLAYER1_PICK_STONE;
+                    } else {
+                        displayMessage = DisplayMessage.PLAYER2_PICK_STONE;
+                    }
                     gameStatus = GameStatus.PICK_STONE;
-                    player1Turn = false;
+                    player1Turn = !player1Turn;
+                    player2Turn = !player2Turn;
                     if (isTripletFit(junctionNo, player1)) {
-                        userEatsStone();
+                        playerEatsStone();
                     }
                     gameStatusChanged = true;
                 }
@@ -345,9 +345,16 @@ public class PlayerCanvasBoardView extends View {
 
                 // if it is picked stone then unpick it
                 junction.setPicked(false);
-                displayMessage = DisplayMessage.PICK_STONE;
+
+                if (player1Turn) {
+                    displayMessage = DisplayMessage.PLAYER1_PICK_STONE;
+                } else {
+                    displayMessage = DisplayMessage.PLAYER2_PICK_STONE;
+                }
+
                 gameStatus = GameStatus.PICK_STONE;
-                player1Turn = true;
+                player1Turn = !player1Turn;
+                player2Turn = !player2Turn;
                 gameStatusChanged = true;
 
             }
@@ -357,58 +364,108 @@ public class PlayerCanvasBoardView extends View {
                 // check if adjacent position is vacant
                 if (gameUtility.isAdjacentVacant(junctionNo, junctionsArray)) {
 
-                    // valid position, user can pick stone
+                    // valid position, player can pick stone
                     junction.setPicked(true);
                     pickedStoneJunctionNo = junctionNo;
-                    displayMessage = DisplayMessage.PLACE_STONE;
+
+                    if (player1Turn) {
+                        displayMessage = DisplayMessage.PLAYER1_PLACE_STONE;
+                    } else {
+                        displayMessage = DisplayMessage.PLAYER2_PLACE_STONE;
+                    }
+
                     gameStatus = GameStatus.PLACE_STONE;
-                    player1Turn = true;
+                    player1Turn = !player1Turn;
+                    player2Turn = !player2Turn;
                     gameStatusChanged = true;
                 }
             }
         } else if (gameStatus.equals(GameStatus.DRAW_STONE)) {
             if (occupiedBy == null || occupiedBy.equals("")) {
 
-                // valid position, user can draw stone
-                userDrawsOrPlaceStone(junctionNo);
-                if (player1StonesLeft > 0) {
-                    displayMessage = getUserStoneBalanceMessage();
-                    gameStatus = GameStatus.DRAW_STONE;
+                // valid position, player can draw stone
+                if (player1Turn) {
+                    player1DrawsOrPlaceStone(junctionNo);
+                    if (player1StonesLeft > 0) {
+                        displayMessage = getPlayerStoneBalanceMessage(player1);
+                        gameStatus = GameStatus.DRAW_STONE;
+                    } else {
+                        displayMessage = DisplayMessage.PLAYER2_PICK_STONE;
+                        gameStatus = GameStatus.PICK_STONE;
+                    }
                 } else {
-                    displayMessage = DisplayMessage.PICK_STONE;
-                    gameStatus = GameStatus.PICK_STONE;
+                    player2DrawsOrPlaceStone(junctionNo);
+                    if (player2StonesLeft > 0) {
+                        displayMessage = getPlayerStoneBalanceMessage(player2);
+                        gameStatus = GameStatus.DRAW_STONE;
+                    } else {
+                        displayMessage = DisplayMessage.PLAYER1_PICK_STONE;
+                        gameStatus = GameStatus.PICK_STONE;
+                    }
                 }
-                player1Turn = false;
+
+
+                player1Turn = !player1Turn;
+                player2Turn = !player2Turn;
                 if (isTripletFit(junctionNo, player1)) {
-                    userEatsStone();
+                    playerEatsStone();
                 }
                 gameStatusChanged = true;
             }
         } else if (gameStatus.equals(GameStatus.EAT_STONE)) {
-            if (occupiedBy != null && occupiedBy.equals(player2)) {
+            if (player1Turn) {
+                if (occupiedBy != null && occupiedBy.equals(player2)) {
 
-                // check if this stone is not part of triplet
-                if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo)) {
+                    // check if this stone is not part of triplet
+                    if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo)) {
 
-                    // valid position, user can eat stone
-                    junction.setOccupiedBy("");
-                    player2Health--;
-                    if (player1StonesLeft > 0) {
-                        displayMessage = getUserStoneBalanceMessage();
-                        gameStatus = GameStatus.DRAW_STONE;
-                    } else {
-                        displayMessage = DisplayMessage.PICK_STONE;
-                        gameStatus = GameStatus.PICK_STONE;
+                        // valid position, player can eat stone
+                        junction.setOccupiedBy("");
+                        player2Health--;
+                        if (player1StonesLeft > 0) {
+                            displayMessage = getPlayerStoneBalanceMessage(player1);
+                            gameStatus = GameStatus.DRAW_STONE;
+                        } else {
+                            displayMessage = DisplayMessage.PLAYER2_PICK_STONE;
+                            gameStatus = GameStatus.PICK_STONE;
+                        }
+                        player1Turn = !player1Turn;
+                        player2Turn = !player2Turn;
+                        gameStatusChanged = true;
                     }
-                    player1Turn = false;
-                    gameStatusChanged = true;
+                }
+            } else {
+                if (occupiedBy != null && occupiedBy.equals(player1)) {
+
+                    // check if this stone is not part of triplet
+                    if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo)) {
+
+                        // valid position, player can eat stone
+                        junction.setOccupiedBy("");
+                        player2Health--;
+                        if (player1StonesLeft > 0) {
+                            displayMessage = getPlayerStoneBalanceMessage(player1);
+                            gameStatus = GameStatus.DRAW_STONE;
+                        } else {
+                            displayMessage = DisplayMessage.PLAYER1_PICK_STONE;
+                            gameStatus = GameStatus.PICK_STONE;
+                        }
+                        player1Turn = !player1Turn;
+                        player2Turn = !player2Turn;
+                        gameStatusChanged = true;
+                    }
                 }
             }
+
         }
 
         // updating game
         if (gameStatusChanged) {
-            playSoundAndVibration(player1);
+            if (player1Turn) {
+                playSoundAndVibration(player1);
+            } else {
+                playSoundAndVibration(player2);
+            }
             invalidate();
         }
     }
@@ -445,470 +502,21 @@ public class PlayerCanvasBoardView extends View {
         }
     }
 
-    private String getUserStoneBalanceMessage() {
-        return DisplayMessage.DRAW_STONE + player1StonesLeft;
+    private String getPlayerStoneBalanceMessage(String player) {
+        if (player.equals(player1)) {
+            return DisplayMessage.DRAW_STONE + player1StonesLeft;
+        } else {
+            return DisplayMessage.DRAW_STONE + player2StonesLeft;
+        }
     }
 
     private String getScoreMessage() {
-        String message = "You: " + player1Health + "/" + player1StonesLeft
-                + ", Computer: " + player2Health + "/" + player2StonesLeft;
+        String message = "Player1: " + player1Health + "/" + player1StonesLeft
+                + ", Player2: " + player2Health + "/" + player2StonesLeft;
         return message;
     }
 
-    private void playComputer() {
-
-        // check winner
-        String winner =
-                gameUtility.getWinner(player1, player2, player1Health, player2Health);
-        if (winner == null) {
-        } else {
-            gameWon = true;
-            setWinnerMessage(winner);
-            invalidate();
-        }
-
-        // game is over
-        if (gameWon) {
-            return;
-        }
-
-        List<Integer> junctionsListToFitTripletComputer =
-                gameUtility.getAllJunctionNumbersToFitTriplet(junctionsArray,
-                        fitTripletsArray, player2);
-        List<Integer> junctionsListToFitTripletUser =
-                gameUtility.getAllJunctionNumbersToFitTriplet(junctionsArray,
-                        fitTripletsArray, player1);
-
-        /**
-         * junctionsListFormingDualTriplet and junctionsListToFitTriplet combined together
-         * make dualTripletFit possible.
-         */
-        List<Integer> junctionsListToFitDualTripletUser =
-                gameUtility.getAllJunctionNumbersToFitFutureDualTriplet(junctionsArray,
-                        fitTripletsArray, player1, latestPlayer1StoneJunctionNo);
-        List<Integer> junctionsListToFitDualTripletComputer =
-                gameUtility.getAllJunctionNumbersToFitFutureDualTriplet(junctionsArray,
-                        fitTripletsArray, player2, latestPlayer2StoneJunctionNo);
-        List<Integer> junctionsListFormingDualTripletUser =
-                gameUtility.getJunctionsListFormingDualTriplet(junctionsArray,
-                        fitTripletsArray, player1, latestPlayer1StoneJunctionNo);
-        List<Integer> junctionsListFormingDualTripletComputer =
-                gameUtility.getJunctionsListFormingDualTriplet(junctionsArray,
-                        fitTripletsArray, player2, latestPlayer2StoneJunctionNo);
-
-        List<Triplet> twoOccupiedAndOneVacantTripletsListUser =
-                gameUtility.getTwoOccupiedAndOneVacantTripletsList(junctionsArray,
-                        fitTripletsArray, player1);
-        List<Triplet> twoOccupiedAndOneVacantTripletsListComputer =
-                gameUtility.getTwoOccupiedAndOneVacantTripletsList(junctionsArray,
-                        fitTripletsArray, player2);
-
-        List<Triplet> twoOccupiedByComputerAndOneOccupiedByUserTripletsList =
-                gameUtility.getTwoOccupiedByComputerAndOneOccupiedByUserTripletsList(junctionsArray,
-                        fitTripletsArray, player1, player2);
-
-        List<Integer> tripletsAdjacentJunctionNumbersListComputer =
-                gameUtility.getTripletsAdjacentJunctionNumbersList(activeTripletsList,
-                        junctionsArray, player2);
-
-        if (player2StonesLeft > 0) {
-
-            // Fit a triplet, if such junction Exist
-            if (!junctionsListToFitTripletComputer.isEmpty()) {
-                Log.d(TAG, "computer fits a triplet");
-                int junctionNo = junctionsListToFitTripletComputer.get(0);
-                computerDrawsOrPlaceStone(junctionNo);
-
-                // make this triplet active
-                isTripletFit(junctionNo, player2);
-
-                // eat best stone of user
-                computerEatsStone(twoOccupiedAndOneVacantTripletsListUser,
-                        junctionsListFormingDualTripletUser,
-                        twoOccupiedByComputerAndOneOccupiedByUserTripletsList,
-                        tripletsAdjacentJunctionNumbersListComputer,
-                        junctionNo);
-            } else {
-
-                // block user from making/forming/fitting a triplet
-                if (!junctionsListToFitTripletUser.isEmpty()) {
-                    Log.d(TAG, "computer blocks user from making a triplet");
-
-                    // todo block best junction and not first
-                    int junctionNo = junctionsListToFitTripletUser.get(0);
-                    computerDrawsOrPlaceStone(junctionNo);
-                } else {
-
-                    /**
-                     * block user from making a future dual triplet
-                     * i.e. if user has stone at junction 1 and 5 (2, 3, 4 are vacant)
-                     * then computer draws stone at 3
-                     * similarly if user has stone at 1 and 10 (2, 3 , 18 are vacant)
-                     * then computer draws stone at 2
-                     */
-                    if (!junctionsListToFitDualTripletUser.isEmpty()) {
-                        Log.d(TAG, "computer blocks user from making a future dual triplet");
-
-                        // todo block best junction and not first
-                        int junctionNo = junctionsListToFitDualTripletUser.get(0);
-                        computerDrawsOrPlaceStone(junctionNo);
-                    } else if(!junctionsListToFitDualTripletComputer.isEmpty()) {
-                        Log.d(TAG, "computer draw stone to make a future dual triplet");
-
-                        // place a stone at junction where a dual triplet can be fit
-                        // todo place stone at best junction
-                        int junctionNo = junctionsListToFitDualTripletComputer.get(0);
-                        computerDrawsOrPlaceStone(junctionNo);
-                    } else {
-                        boolean placedStone = false;
-
-                        // check if user placed stone at a corner
-                        if (latestPlayer1StoneJunctionNo % 2 == 1) {
-                            int oppositeJunctionNo = latestPlayer1StoneJunctionNo + 4;
-                            if ((latestPlayer1StoneJunctionNo > 4 && latestPlayer1StoneJunctionNo < 8)
-                                    || (latestPlayer1StoneJunctionNo > 12
-                                    && latestPlayer1StoneJunctionNo < 16)
-                                    || (latestPlayer1StoneJunctionNo > 20
-                                    && latestPlayer1StoneJunctionNo < 24)) {
-
-                                oppositeJunctionNo = latestPlayer1StoneJunctionNo - 4;
-                            }
-                            if (gameUtility.isVacant(oppositeJunctionNo, junctionsArray)) {
-                                Log.d(TAG, "computer places stone at opposite corner in " +
-                                        "same square as that of user");
-                                computerDrawsOrPlaceStone(oppositeJunctionNo);
-                                placedStone = true;
-                            }
-                        }
-
-                        if (!placedStone) {
-
-                            // place stone starting from 1st and on odd position
-                            for (int i = 1; i < junctionsArray.length; i += 2) {
-                                if (gameUtility.isVacant(i, junctionsArray)) {
-                                    computerDrawsOrPlaceStone(i);
-                                    placedStone = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (!placedStone) {
-
-                            // place stone starting from 1st and on even position (last option)
-                            for (int i = 1; i < junctionsArray.length; i += 2) {
-                                if (gameUtility.isVacant(i, junctionsArray)) {
-                                    computerDrawsOrPlaceStone(i);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-
-            // pick a stone and place at adjacent position
-            boolean placedStone = false;
-
-            // make triplet if possible
-            if (!twoOccupiedAndOneVacantTripletsListComputer.isEmpty()) {
-                for (int i = 0;
-                     i < twoOccupiedAndOneVacantTripletsListComputer.size() && !placedStone; i++) {
-                    Triplet triplet = twoOccupiedAndOneVacantTripletsListComputer.get(i);
-                    int junctionNo1 = triplet.getJunctionNo1();
-                    int junctionNo2 = triplet.getJunctionNo2();
-                    int junctionNo3 = triplet.getJunctionNo3();
-
-                    // getting vacant junction number
-                    int vacantJunctionNo;
-                    if (gameUtility.isVacant(junctionNo1, junctionsArray)) {
-                        vacantJunctionNo = junctionNo1;
-                    } else if (gameUtility.isVacant(junctionNo2, junctionsArray)) {
-                        vacantJunctionNo = junctionNo2;
-                    } else {
-                        vacantJunctionNo = junctionNo3;
-                    }
-
-                    // get list of all junctions adjacent to vacant
-                    List<Integer> adjacentJunctionNumbersList =
-                            gameUtility.getJunctionAdjacentJunctionNumbersList(vacantJunctionNo);
-                    for (int j = 0; j < adjacentJunctionNumbersList.size(); j++) {
-                        int adjacentJunction = adjacentJunctionNumbersList.get(j);
-
-                        // if this junction is not vacant,
-                        // not triplet's part and not by user occupied
-                        if (!gameUtility.isVacant(adjacentJunction, junctionsArray)) {
-                            if (adjacentJunction != junctionNo1
-                                    && adjacentJunction != junctionNo2
-                                    && adjacentJunction != junctionNo3) {
-                                if (junctionsArray[adjacentJunction].getOccupiedBy()
-                                        .equals(player2)) {
-
-                                    // pick stone at this junctionNo
-                                    junctionsArray[adjacentJunction].setOccupiedBy("");
-
-                                    // if adjacent junction is part of triplet then disable it
-                                    if (gameUtility.isPartOfTriplet(activeTripletsList,
-                                            adjacentJunction)) {
-                                        disableTripletFit(adjacentJunction);
-                                    }
-
-                                    // place it at vacant position
-                                    computerDrawsOrPlaceStone(vacantJunctionNo);
-
-                                    // update these list to reflect computer's move
-                                    twoOccupiedByComputerAndOneOccupiedByUserTripletsList =
-                                            gameUtility.getTwoOccupiedByComputerAndOneOccupiedByUserTripletsList(
-                                                    junctionsArray, fitTripletsArray,
-                                                    player1, player2);
-                                    tripletsAdjacentJunctionNumbersListComputer =
-                                            gameUtility.getTripletsAdjacentJunctionNumbersList(
-                                                    activeTripletsList, junctionsArray,
-                                                    player2);
-
-                                    // computer has formed a triplet so eat user's stone
-                                    computerEatsStone(twoOccupiedAndOneVacantTripletsListUser,
-                                            junctionsListFormingDualTripletUser,
-                                            twoOccupiedByComputerAndOneOccupiedByUserTripletsList,
-                                            tripletsAdjacentJunctionNumbersListComputer,
-                                            vacantJunctionNo);
-
-                                    // add this triplet to activeList
-                                    isTripletFit(vacantJunctionNo, player2);
-
-                                    placedStone = true;
-                                    Log.d(TAG, "computer formed triplet by pick and move at " +
-                                            "junction No: " + vacantJunctionNo);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            } else if (!twoOccupiedAndOneVacantTripletsListUser.isEmpty()) {
-
-                // block user from making triplet if user has such opportunity in next move
-                for (int i = 0;
-                     i < twoOccupiedAndOneVacantTripletsListUser.size() && !placedStone; i++) {
-                    Triplet triplet = twoOccupiedAndOneVacantTripletsListUser.get(i);
-                    int junctionNo1 = triplet.getJunctionNo1();
-                    int junctionNo2 = triplet.getJunctionNo2();
-                    int junctionNo3 = triplet.getJunctionNo3();
-
-                    // getting vacant junction number
-                    int vacantJunctionNo;
-                    if (gameUtility.isVacant(junctionNo1, junctionsArray)) {
-                        vacantJunctionNo = junctionNo1;
-                    } else if (gameUtility.isVacant(junctionNo2, junctionsArray)) {
-                        vacantJunctionNo = junctionNo2;
-                    } else {
-                        vacantJunctionNo = junctionNo3;
-                    }
-
-                    // get list of all junctions adjacent to vacant
-                    List<Integer> adjacentJunctionNumbersList =
-                            gameUtility.getJunctionAdjacentJunctionNumbersList(vacantJunctionNo);
-                    for (int j = 0; j < adjacentJunctionNumbersList.size(); j++) {
-                        int adjacentJunction = adjacentJunctionNumbersList.get(j);
-
-                        // if this junction is not vacant and not by user occupied
-                        // todo move if it is computer's triplet part??
-                        if (!gameUtility.isVacant(adjacentJunction, junctionsArray)) {
-
-                            if (junctionsArray[adjacentJunction].getOccupiedBy()
-                                    .equals(player2)) {
-
-                                // pick stone at this junctionNo
-                                junctionsArray[adjacentJunction].setOccupiedBy("");
-
-                                // if adjacent junction is part of triplet then disable it
-                                if (gameUtility.isPartOfTriplet(activeTripletsList,
-                                        adjacentJunction)) {
-                                    disableTripletFit(adjacentJunction);
-                                }
-
-                                // place it at vacant position
-                                computerDrawsOrPlaceStone(vacantJunctionNo);
-
-                                placedStone = true;
-                                Log.d(TAG, "computer blocked user's triplet by pick and move at " +
-                                        "junction No: " + vacantJunctionNo);
-                                break;
-                            }
-                        }
-                    }
-                }
-            } else if (!activeTripletsList.isEmpty()) {
-
-                // break a triplet if user is not going to block it in next move and
-                // user is not going to form a triplet in next move
-
-                // proceed if user is not going to form a triplet in next move
-                boolean userCanFormTriplet = false;
-                if (!twoOccupiedAndOneVacantTripletsListUser.isEmpty()) {
-                    for (int i = 0;
-                         i < twoOccupiedAndOneVacantTripletsListUser.size()
-                                 && !userCanFormTriplet; i++) {
-
-                        Triplet triplet = twoOccupiedAndOneVacantTripletsListUser.get(i);
-                        int junctionNo1 = triplet.getJunctionNo1();
-                        int junctionNo2 = triplet.getJunctionNo2();
-                        int junctionNo3 = triplet.getJunctionNo3();
-
-                        // getting vacant junction number
-                        int vacantJunctionNo;
-                        if (gameUtility.isVacant(junctionNo1, junctionsArray)) {
-                            vacantJunctionNo = junctionNo1;
-                        } else if (gameUtility.isVacant(junctionNo2, junctionsArray)) {
-                            vacantJunctionNo = junctionNo2;
-                        } else {
-                            vacantJunctionNo = junctionNo3;
-                        }
-
-                        // get list of all junctions adjacent to vacant
-                        List<Integer> adjacentJunctionNumbersList =
-                                gameUtility.getJunctionAdjacentJunctionNumbersList(vacantJunctionNo);
-                        for (int j = 0; j < adjacentJunctionNumbersList.size(); j++) {
-                            int adjacentJunction = adjacentJunctionNumbersList.get(j);
-
-                            // if this junction is not vacant and is occupied by user
-                            if (!gameUtility.isVacant(adjacentJunction, junctionsArray)) {
-
-                                if (junctionsArray[adjacentJunction].getOccupiedBy()
-                                        .equals(player1)) {
-
-                                    // if adjacentJunction is not part of triplet
-                                    if (adjacentJunction != junctionNo1
-                                            && adjacentJunction != junctionNo2
-                                            && adjacentJunction != junctionNo3) {
-                                        userCanFormTriplet = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // computer breaks fit if user can't block it
-                if (!userCanFormTriplet) {
-                    for (int i = 0; i < activeTripletsList.size() && !placedStone; i++) {
-                        Triplet triplet = activeTripletsList.get(i);
-                        int junctionNo1 = triplet.getJunctionNo1();
-                        int junctionNo2 = triplet.getJunctionNo2();
-                        int junctionNo3 = triplet.getJunctionNo3();
-
-                        // check if this triplet is occupied by computer else skip
-                        if (junctionsArray[junctionNo1].getOccupiedBy().equals(player1)) {
-                            continue;
-                        }
-
-                        int junctionNumbersArray[] = {junctionNo1, junctionNo2, junctionNo3};
-
-                        for (int j = 0; j < junctionNumbersArray.length; j++) {
-                            int junctionNo = junctionNumbersArray[j];
-
-                            // get list of all junctions adjacent to junctionNo
-                            List<Integer> adjacentJunctionNumbersList =
-                                    gameUtility.getJunctionAdjacentJunctionNumbersList(junctionNo);
-
-                            // -1 means no vacant junction found
-                            int vacantJunctionNo = -1;
-                            boolean userCanBlockTriplet = false;
-                            for (int k = 0; k < adjacentJunctionNumbersList.size(); k++) {
-                                int adjacentJunctionNo = adjacentJunctionNumbersList.get(k);
-
-                                // if this junction is vacant
-                                if (gameUtility.isVacant(adjacentJunctionNo, junctionsArray)) {
-                                    vacantJunctionNo = adjacentJunctionNo;
-                                } else {
-
-                                    // if any adjacent junction is occupied by user
-                                    // then he can block triplet
-                                    if (junctionsArray[adjacentJunctionNo].getOccupiedBy()
-                                            .equals(player1)) {
-                                        userCanBlockTriplet = true;
-                                    }
-                                }
-                            }
-
-                            if (!userCanBlockTriplet && vacantJunctionNo != -1) {
-
-                                // pick stone from junctionNo
-                                junctionsArray[junctionNo].setOccupiedBy("");
-
-                                // if this junction is part of triplet then disable it
-                                if (gameUtility.isPartOfTriplet(activeTripletsList, junctionNo)) {
-                                    disableTripletFit(junctionNo);
-                                }
-
-                                // place it at vacant position
-                                computerDrawsOrPlaceStone(vacantJunctionNo);
-                                Log.d(TAG, "computer blocked user's triplet by pick and move at " +
-                                        "junction No: " + vacantJunctionNo);
-                                placedStone = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // move a random stone
-            if (!placedStone) {
-                for (int i = 1; i < junctionsArray.length && !placedStone; i++) {
-
-                    // not vacant and occupied by computer
-                    if (!gameUtility.isVacant(i, junctionsArray)) {
-                        if (junctionsArray[i].getOccupiedBy().equals(player2)) {
-
-                            // find list of junctions adjacent to this junctionNo
-                            List<Integer> adjacentJunctionNumbersList =
-                                    gameUtility.getJunctionAdjacentJunctionNumbersList(i);
-                            for (int j = 0; j < adjacentJunctionNumbersList.size(); j++) {
-                                int adjacentJunctionNo = adjacentJunctionNumbersList.get(j);
-
-                                // if this junction is vacant
-                                if (gameUtility.isVacant(adjacentJunctionNo, junctionsArray)) {
-
-                                    // pick stone at junctionNo i
-                                    junctionsArray[i].setOccupiedBy("");
-
-                                    // if this junction is part of triplet then disable it
-                                    if (gameUtility.isPartOfTriplet(activeTripletsList, i)) {
-                                        disableTripletFit(i);
-                                    }
-
-                                    // place it at adjacent vacant position
-                                    computerDrawsOrPlaceStone(adjacentJunctionNo);
-
-                                    placedStone = true;
-                                    Log.d(TAG, "computer randomly placed a stone at " +
-                                            "junction No: " + adjacentJunctionNo);
-                                    break;
-
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        winner = gameUtility.getWinner(player1, player2, player1Health, player2Health);
-        if (winner == null) {
-            player1Turn = true;
-        } else {
-            gameWon = true;
-            setWinnerMessage(winner);
-        }
-
-        // updating game
-        invalidate();
-    }
-
-    private void computerDrawsOrPlaceStone(int junctionNo) {
+    private void player2DrawsOrPlaceStone(int junctionNo) {
         junctionsArray[junctionNo].setOccupiedBy(player2);
         latestPlayer2StoneJunctionNo = junctionNo;
         if (player2StonesLeft > 0) {
@@ -916,7 +524,7 @@ public class PlayerCanvasBoardView extends View {
         }
     }
 
-    private void userDrawsOrPlaceStone(int junctionNo) {
+    private void player1DrawsOrPlaceStone(int junctionNo) {
         junctionsArray[junctionNo].setOccupiedBy(player1);
         latestPlayer1StoneJunctionNo = junctionNo;
         if (player1StonesLeft > 0) {
@@ -969,63 +577,63 @@ public class PlayerCanvasBoardView extends View {
         }
     }
 
-    private void computerEatsStone(List<Triplet> twoOccupiedAndOneVacantTripletsListUser,
-                                   List<Integer> junctionsListFormingDualTripletUser,
-                                   List<Triplet> twoOccupiedByComputerAndOneOccupiedByUserTripletsList,
-                                   List<Integer> tripletsAdjacentJunctionNumbersListComputer,
+    private void player2EatsStone(List<Triplet> twoOccupiedAndOneVacantTripletsListplayer,
+                                   List<Integer> junctionsListFormingDualTripletplayer,
+                                   List<Triplet> twoOccupiedByplayer2AndOneOccupiedByplayerTripletsList,
+                                   List<Integer> tripletsAdjacentJunctionNumbersListplayer2,
                                    int junctionNoWhereTripletFormed) {
         if (gameUtility.canEatPlayerStone(junctionsArray, player1, activeTripletsList)) {
             boolean ateStone = false;
 
             // eat a stone from two stones triplet
-            if (!twoOccupiedAndOneVacantTripletsListUser.isEmpty()) {
-                for (int i = 0; i < twoOccupiedAndOneVacantTripletsListUser.size(); i++) {
-                    Triplet triplet = twoOccupiedAndOneVacantTripletsListUser.get(i);
+            if (!twoOccupiedAndOneVacantTripletsListplayer.isEmpty()) {
+                for (int i = 0; i < twoOccupiedAndOneVacantTripletsListplayer.size(); i++) {
+                    Triplet triplet = twoOccupiedAndOneVacantTripletsListplayer.get(i);
                     int junctionNo1 = triplet.getJunctionNo1();
                     int junctionNo2 = triplet.getJunctionNo2();
                     int junctionNo3 = triplet.getJunctionNo3();
                     if (gameUtility.isVacant(junctionNo1, junctionsArray)) {
                         if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo2)) {
-                            computerEatsStone(junctionNo2);
+                            player2EatsStone(junctionNo2);
                             ateStone = true;
                             break;
                         } else if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo3)) {
-                            computerEatsStone(junctionNo3);
+                            player2EatsStone(junctionNo3);
                             ateStone = true;
                             break;
                         }
                     } else if (gameUtility.isVacant(junctionNo2, junctionsArray)) {
                         if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo1)) {
-                            computerEatsStone(junctionNo1);
+                            player2EatsStone(junctionNo1);
                             ateStone = true;
                             break;
                         } else if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo3)) {
-                            computerEatsStone(junctionNo3);
+                            player2EatsStone(junctionNo3);
                             ateStone = true;
                             break;
                         }
                     } else if (gameUtility.isVacant(junctionNo3, junctionsArray)) {
                         if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo1)) {
-                            computerEatsStone(junctionNo1);
+                            player2EatsStone(junctionNo1);
                             ateStone = true;
                             break;
                         } else if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo2)) {
-                            computerEatsStone(junctionNo2);
+                            player2EatsStone(junctionNo2);
                             ateStone = true;
                             break;
                         }
                     }
                 }
-            } else if(!twoOccupiedByComputerAndOneOccupiedByUserTripletsList.isEmpty()) {
+            } else if(!twoOccupiedByplayer2AndOneOccupiedByplayerTripletsList.isEmpty()) {
 
-                // eat a stone from triplets having two junctions occupied by computer and one by user
-                for (int i = 0; i < twoOccupiedByComputerAndOneOccupiedByUserTripletsList.size(); i++) {
-                    Triplet triplet = twoOccupiedByComputerAndOneOccupiedByUserTripletsList.get(i);
+                // eat a stone from triplets having two junctions occupied by player2 and one by player
+                for (int i = 0; i < twoOccupiedByplayer2AndOneOccupiedByplayerTripletsList.size(); i++) {
+                    Triplet triplet = twoOccupiedByplayer2AndOneOccupiedByplayerTripletsList.get(i);
                     int junctionNo1 = triplet.getJunctionNo1();
                     int junctionNo2 = triplet.getJunctionNo2();
                     int junctionNo3 = triplet.getJunctionNo3();
 
-                    // stone junctionNo to be eaten by computer
+                    // stone junctionNo to be eaten by player2
                     int junctionNo = junctionNo1;
                     if (junctionsArray[junctionNo2].getOccupiedBy().equals(player1)) {
                         junctionNo = junctionNo2;
@@ -1033,19 +641,19 @@ public class PlayerCanvasBoardView extends View {
                         junctionNo = junctionNo3;
                     }
                     if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo)) {
-                        computerEatsStone(junctionNo);
+                        player2EatsStone(junctionNo);
                         ateStone = true;
                         break;
                     }
                 }
 
-            } else  if (!junctionsListFormingDualTripletUser.isEmpty()) {
+            } else  if (!junctionsListFormingDualTripletplayer.isEmpty()) {
 
                 // eat a stone which will be part of dual triplet in future
-                for (int i = 0; i < junctionsListFormingDualTripletUser.size(); i++) {
-                    int junctionNo = junctionsListFormingDualTripletUser.get(i);
+                for (int i = 0; i < junctionsListFormingDualTripletplayer.size(); i++) {
+                    int junctionNo = junctionsListFormingDualTripletplayer.get(i);
                     if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo)) {
-                        computerEatsStone(junctionNo);
+                        player2EatsStone(junctionNo);
                         ateStone = true;
                         break;
                     }
@@ -1054,25 +662,25 @@ public class PlayerCanvasBoardView extends View {
 
                 // eat latestPlayer1StoneJunctionNo
                 if (!gameUtility.isPartOfTriplet(activeTripletsList, latestPlayer1StoneJunctionNo)) {
-                    computerEatsStone(latestPlayer1StoneJunctionNo);
+                    player2EatsStone(latestPlayer1StoneJunctionNo);
                     ateStone = true;
                 } else {
 
-                    // eat a stone adjacent to junctions where computer formed a triplet
-                    if (!tripletsAdjacentJunctionNumbersListComputer.isEmpty()) {
+                    // eat a stone adjacent to junctions where player2 formed a triplet
+                    if (!tripletsAdjacentJunctionNumbersListplayer2.isEmpty()) {
                         for (int i = 0;
-                             i < tripletsAdjacentJunctionNumbersListComputer.size(); i++) {
+                             i < tripletsAdjacentJunctionNumbersListplayer2.size(); i++) {
                             int adjacentJunctionNo =
-                                    tripletsAdjacentJunctionNumbersListComputer.get(i);
+                                    tripletsAdjacentJunctionNumbersListplayer2.get(i);
 
-                            // check if it is not vacant and not occupied by computer
+                            // check if it is not vacant and not occupied by player2
                             if (junctionsArray[adjacentJunctionNo].getOccupiedBy() != null
                                     && !junctionsArray[adjacentJunctionNo].getOccupiedBy()
                                     .equals(player2)) {
                                 if (!gameUtility.isPartOfTriplet(activeTripletsList,
                                         adjacentJunctionNo)) {
 
-                                    computerEatsStone(adjacentJunctionNo);
+                                    player2EatsStone(adjacentJunctionNo);
                                     ateStone = true;
                                     break;
                                 }
@@ -1083,13 +691,13 @@ public class PlayerCanvasBoardView extends View {
             }
             if (!ateStone) {
 
-                // eat 1st eligible user stone starting from junctionNo 1
+                // eat 1st eligible player stone starting from junctionNo 1
                 for (int i = 1; i < junctionsArray.length; i++) {
                     Junction junction = junctionsArray[i];
                     if (junction.getOccupiedBy() != null
                             && junction.getOccupiedBy().equals(player1)) {
                         if (!gameUtility.isPartOfTriplet(activeTripletsList, i)) {
-                            computerEatsStone(i);
+                            player2EatsStone(i);
                             break;
                         }
                     }
@@ -1100,8 +708,8 @@ public class PlayerCanvasBoardView extends View {
         }
     }
 
-    private void computerEatsStone(int junctionNo) {
-        Log.d(TAG, "computer eats a stone at junction No: " + junctionNo);
+    private void player2EatsStone(int junctionNo) {
+        Log.d(TAG, "player2 eats a stone at junction No: " + junctionNo);
 
         // we are sure that a stone can be eaten from given junctionNo
         junctionsArray[junctionNo].setOccupiedBy("");
@@ -1109,9 +717,9 @@ public class PlayerCanvasBoardView extends View {
         playSoundAndVibration(player2);
     }
 
-    private void userEatsStone() {
+    private void playerEatsStone() {
 
-        // if user can eat stone, it's fine. else player1Health will increase
+        // if player can eat stone, it's fine. else player1Health will increase
         if (gameUtility.canEatPlayerStone(junctionsArray,
                 player2, activeTripletsList)) {
             displayMessage = DisplayMessage.EAT_STONE;
@@ -1124,9 +732,9 @@ public class PlayerCanvasBoardView extends View {
 
     private void setWinnerMessage(String winner) {
         if (winner.equals(player2)) {
-            displayMessage = DisplayMessage.COMPUTER_WON;
+            displayMessage = DisplayMessage.PLAYER2_WON;
         } else {
-            displayMessage = DisplayMessage.USER_WON;
+            displayMessage = DisplayMessage.PLAYER1_WON;
         }
     }
 
@@ -1138,9 +746,9 @@ public class PlayerCanvasBoardView extends View {
         player1Health = maximumInitialStones;
         gameWon = false;
         player1Turn = false;
+        player2Turn = false;
         player1StonesLeft = maximumInitialStones;
         player2StonesLeft = maximumInitialStones;
-        displayMessage = getUserStoneBalanceMessage();
         for (int i = 1; i < junctionsArray.length; i++) {
             junctionsArray[i].setOccupiedBy("");
         }
@@ -1148,11 +756,13 @@ public class PlayerCanvasBoardView extends View {
         gameStatus = GameStatus.DRAW_STONE;
         activeTripletsList = new ArrayList();
 
-        // checking if first move is by computer
-        if (settingsPreferences.getBoolean("fitto_computer_plays_first", true)) {
-            playComputer();
+        // checking if first move is by player2
+        if (settingsPreferences.getBoolean("fitto_player2_plays_first", true)) {
+            player2Turn = true;
+            displayMessage = getPlayerStoneBalanceMessage(player2);
         } else {
             player1Turn = true;
+            displayMessage = getPlayerStoneBalanceMessage(player1);
         }
         invalidate();
     }
