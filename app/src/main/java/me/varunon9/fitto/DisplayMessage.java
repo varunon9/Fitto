@@ -24,6 +24,6 @@ public class DisplayMessage {
     public static final String PLAYER2_PICK_STONE = "Player2: Pick a stone to move";
     public static final String PLAYER2_WON = "Player2 nailed it. Congrats!!";
     public static final String PLAYER2_PLACE_STONE = "Player2: Place the picked stone";
-    public static final String PLAYER2_EAT_STONE = "Player2: Eat player2's stone";
+    public static final String PLAYER2_EAT_STONE = "Player2: Eat player1's stone";
     public static final String PLAYER2_DRAW_STONE = "Player2's Turn, Stones Left: ";
 }

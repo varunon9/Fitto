@@ -135,6 +135,12 @@ public class PlayerCanvasBoardView extends View {
 
         settingsPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
+        // initial move will be by player 1
+        player1Turn = true;
+        player2Turn = false;
+        gameStatus = GameStatus.DRAW_STONE;
+        displayMessage = DisplayMessage.PLAYER1_DRAW_STONE;
+
         // 24 junctions starting from 1 to 24
         junctionsArray = new Junction[25];
 
@@ -193,7 +199,6 @@ public class PlayerCanvasBoardView extends View {
         drawBoard();
         placeStones(junctionsArray, canvas);
         paintTriplets();
-        displayMessage = DisplayMessage.PLAYER1_DRAW_STONE;
         drawMessage();
     }
 
@@ -320,24 +325,36 @@ public class PlayerCanvasBoardView extends View {
                     junctionsArray[pickedStoneJunctionNo].setOccupiedBy("");
                     if (player1Turn) {
                         player1DrawsOrPlaceStone(junctionNo);
+
+                        // if picked stone was part of triplet, disable it
+                        disableTripletFit(pickedStoneJunctionNo);
+
+                        if (isTripletFit(junctionNo, player1)) {
+                            // do necessary updates to have player eat stone
+                            playerEatsStone();
+                        } else {
+                            gameStatus = GameStatus.PICK_STONE;
+                            displayMessage = DisplayMessage.PLAYER2_PICK_STONE;
+                            player1Turn = !player1Turn;
+                            player2Turn = !player2Turn;
+                        }
                     } else {
                         player2DrawsOrPlaceStone(junctionNo);
-                    }
 
-                    // if picked stone was part of triplet, disable it
-                    disableTripletFit(pickedStoneJunctionNo);
+                        // if picked stone was part of triplet, disable it
+                        disableTripletFit(pickedStoneJunctionNo);
 
-                    if (player1Turn) {
-                        displayMessage = DisplayMessage.PLAYER1_PICK_STONE;
-                    } else {
-                        displayMessage = DisplayMessage.PLAYER2_PICK_STONE;
+                        if (isTripletFit(junctionNo, player2)) {
+                            // do necessary updates to have player eat stone
+                            playerEatsStone();
+                        } else {
+                            gameStatus = GameStatus.PICK_STONE;
+                            displayMessage = DisplayMessage.PLAYER1_PICK_STONE;
+                            player1Turn = !player1Turn;
+                            player2Turn = !player2Turn;
+                        }
                     }
-                    gameStatus = GameStatus.PICK_STONE;
-                    player1Turn = !player1Turn;
-                    player2Turn = !player2Turn;
-                    if (isTripletFit(junctionNo, player1)) {
-                        playerEatsStone();
-                    }
+                    
                     gameStatusChanged = true;
                 }
 
@@ -353,31 +370,39 @@ public class PlayerCanvasBoardView extends View {
                 }
 
                 gameStatus = GameStatus.PICK_STONE;
-                player1Turn = !player1Turn;
-                player2Turn = !player2Turn;
                 gameStatusChanged = true;
 
             }
         } else if (gameStatus.equals(GameStatus.PICK_STONE)) {
-            if (occupiedBy != null && occupiedBy.equals(player1)) {
+            if (player1Turn) {
+                if (occupiedBy != null && occupiedBy.equals(player1)) {
 
-                // check if adjacent position is vacant
-                if (gameUtility.isAdjacentVacant(junctionNo, junctionsArray)) {
+                    // check if adjacent position is vacant
+                    if (gameUtility.isAdjacentVacant(junctionNo, junctionsArray)) {
 
-                    // valid position, player can pick stone
-                    junction.setPicked(true);
-                    pickedStoneJunctionNo = junctionNo;
+                        // valid position, player can pick stone
+                        junction.setPicked(true);
+                        pickedStoneJunctionNo = junctionNo;
 
-                    if (player1Turn) {
+                        gameStatus = GameStatus.PLACE_STONE;
                         displayMessage = DisplayMessage.PLAYER1_PLACE_STONE;
-                    } else {
-                        displayMessage = DisplayMessage.PLAYER2_PLACE_STONE;
+                        gameStatusChanged = true;
                     }
+                }
+            } else {
+                if (occupiedBy != null && occupiedBy.equals(player2)) {
 
-                    gameStatus = GameStatus.PLACE_STONE;
-                    player1Turn = !player1Turn;
-                    player2Turn = !player2Turn;
-                    gameStatusChanged = true;
+                    // check if adjacent position is vacant
+                    if (gameUtility.isAdjacentVacant(junctionNo, junctionsArray)) {
+
+                        // valid position, player can pick stone
+                        junction.setPicked(true);
+                        pickedStoneJunctionNo = junctionNo;
+
+                        gameStatus = GameStatus.PLACE_STONE;
+                        displayMessage = DisplayMessage.PLAYER2_PLACE_STONE;
+                        gameStatusChanged = true;
+                    }
                 }
             }
         } else if (gameStatus.equals(GameStatus.DRAW_STONE)) {
@@ -386,30 +411,36 @@ public class PlayerCanvasBoardView extends View {
                 // valid position, player can draw stone
                 if (player1Turn) {
                     player1DrawsOrPlaceStone(junctionNo);
-                    if (player1StonesLeft > 0) {
-                        displayMessage = getPlayerStoneBalanceMessage(player1);
-                        gameStatus = GameStatus.DRAW_STONE;
+                    if (isTripletFit(junctionNo, player1)) {
+                        playerEatsStone();
                     } else {
-                        displayMessage = DisplayMessage.PLAYER2_PICK_STONE;
-                        gameStatus = GameStatus.PICK_STONE;
+                        if (player2StonesLeft > 0) {
+                            displayMessage = getPlayerStoneBalanceMessage(player2);
+                            gameStatus = GameStatus.DRAW_STONE;
+                        } else {
+                            displayMessage = DisplayMessage.PLAYER2_PICK_STONE;
+                            gameStatus = GameStatus.PICK_STONE;
+                        }
+                        player1Turn = !player1Turn;
+                        player2Turn = !player2Turn;
                     }
                 } else {
                     player2DrawsOrPlaceStone(junctionNo);
-                    if (player2StonesLeft > 0) {
-                        displayMessage = getPlayerStoneBalanceMessage(player2);
-                        gameStatus = GameStatus.DRAW_STONE;
+                    if (isTripletFit(junctionNo, player2)) {
+                        playerEatsStone();
                     } else {
-                        displayMessage = DisplayMessage.PLAYER1_PICK_STONE;
-                        gameStatus = GameStatus.PICK_STONE;
+                        if (player1StonesLeft > 0) {
+                            displayMessage = getPlayerStoneBalanceMessage(player1);
+                            gameStatus = GameStatus.DRAW_STONE;
+                        } else {
+                            displayMessage = DisplayMessage.PLAYER1_PICK_STONE;
+                            gameStatus = GameStatus.PICK_STONE;
+                        }
+                        player1Turn = !player1Turn;
+                        player2Turn = !player2Turn;
                     }
                 }
 
-
-                player1Turn = !player1Turn;
-                player2Turn = !player2Turn;
-                if (isTripletFit(junctionNo, player1)) {
-                    playerEatsStone();
-                }
                 gameStatusChanged = true;
             }
         } else if (gameStatus.equals(GameStatus.EAT_STONE)) {
@@ -420,10 +451,11 @@ public class PlayerCanvasBoardView extends View {
                     if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo)) {
 
                         // valid position, player can eat stone
+                        Log.d(TAG, "player1 eats a stone at junction No: " + junctionNo);
                         junction.setOccupiedBy("");
                         player2Health--;
-                        if (player1StonesLeft > 0) {
-                            displayMessage = getPlayerStoneBalanceMessage(player1);
+                        if (player2StonesLeft > 0) {
+                            displayMessage = getPlayerStoneBalanceMessage(player2);
                             gameStatus = GameStatus.DRAW_STONE;
                         } else {
                             displayMessage = DisplayMessage.PLAYER2_PICK_STONE;
@@ -441,8 +473,9 @@ public class PlayerCanvasBoardView extends View {
                     if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo)) {
 
                         // valid position, player can eat stone
+                        Log.d(TAG, "player2 eats a stone at junction No: " + junctionNo);
                         junction.setOccupiedBy("");
-                        player2Health--;
+                        player1Health--;
                         if (player1StonesLeft > 0) {
                             displayMessage = getPlayerStoneBalanceMessage(player1);
                             gameStatus = GameStatus.DRAW_STONE;
@@ -457,15 +490,21 @@ public class PlayerCanvasBoardView extends View {
                 }
             }
 
+            // check winner
+            String winner =
+                    gameUtility.getWinner(player1, player2, player1Health, player2Health);
+            if (winner == null) {
+            } else {
+                gameWon = true;
+                setWinnerMessage(winner);
+                invalidate();
+            }
+
         }
 
         // updating game
         if (gameStatusChanged) {
-            if (player1Turn) {
-                playSoundAndVibration(player1);
-            } else {
-                playSoundAndVibration(player2);
-            }
+            playSoundAndVibration();
             invalidate();
         }
     }
@@ -504,9 +543,9 @@ public class PlayerCanvasBoardView extends View {
 
     private String getPlayerStoneBalanceMessage(String player) {
         if (player.equals(player1)) {
-            return DisplayMessage.DRAW_STONE + player1StonesLeft;
+            return DisplayMessage.PLAYER1_DRAW_STONE + player1StonesLeft;
         } else {
-            return DisplayMessage.DRAW_STONE + player2StonesLeft;
+            return DisplayMessage.PLAYER2_DRAW_STONE + player2StonesLeft;
         }
     }
 
@@ -577,156 +616,45 @@ public class PlayerCanvasBoardView extends View {
         }
     }
 
-    private void player2EatsStone(List<Triplet> twoOccupiedAndOneVacantTripletsListplayer,
-                                   List<Integer> junctionsListFormingDualTripletplayer,
-                                   List<Triplet> twoOccupiedByplayer2AndOneOccupiedByplayerTripletsList,
-                                   List<Integer> tripletsAdjacentJunctionNumbersListplayer2,
-                                   int junctionNoWhereTripletFormed) {
-        if (gameUtility.canEatPlayerStone(junctionsArray, player1, activeTripletsList)) {
-            boolean ateStone = false;
-
-            // eat a stone from two stones triplet
-            if (!twoOccupiedAndOneVacantTripletsListplayer.isEmpty()) {
-                for (int i = 0; i < twoOccupiedAndOneVacantTripletsListplayer.size(); i++) {
-                    Triplet triplet = twoOccupiedAndOneVacantTripletsListplayer.get(i);
-                    int junctionNo1 = triplet.getJunctionNo1();
-                    int junctionNo2 = triplet.getJunctionNo2();
-                    int junctionNo3 = triplet.getJunctionNo3();
-                    if (gameUtility.isVacant(junctionNo1, junctionsArray)) {
-                        if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo2)) {
-                            player2EatsStone(junctionNo2);
-                            ateStone = true;
-                            break;
-                        } else if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo3)) {
-                            player2EatsStone(junctionNo3);
-                            ateStone = true;
-                            break;
-                        }
-                    } else if (gameUtility.isVacant(junctionNo2, junctionsArray)) {
-                        if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo1)) {
-                            player2EatsStone(junctionNo1);
-                            ateStone = true;
-                            break;
-                        } else if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo3)) {
-                            player2EatsStone(junctionNo3);
-                            ateStone = true;
-                            break;
-                        }
-                    } else if (gameUtility.isVacant(junctionNo3, junctionsArray)) {
-                        if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo1)) {
-                            player2EatsStone(junctionNo1);
-                            ateStone = true;
-                            break;
-                        } else if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo2)) {
-                            player2EatsStone(junctionNo2);
-                            ateStone = true;
-                            break;
-                        }
-                    }
-                }
-            } else if(!twoOccupiedByplayer2AndOneOccupiedByplayerTripletsList.isEmpty()) {
-
-                // eat a stone from triplets having two junctions occupied by player2 and one by player
-                for (int i = 0; i < twoOccupiedByplayer2AndOneOccupiedByplayerTripletsList.size(); i++) {
-                    Triplet triplet = twoOccupiedByplayer2AndOneOccupiedByplayerTripletsList.get(i);
-                    int junctionNo1 = triplet.getJunctionNo1();
-                    int junctionNo2 = triplet.getJunctionNo2();
-                    int junctionNo3 = triplet.getJunctionNo3();
-
-                    // stone junctionNo to be eaten by player2
-                    int junctionNo = junctionNo1;
-                    if (junctionsArray[junctionNo2].getOccupiedBy().equals(player1)) {
-                        junctionNo = junctionNo2;
-                    } else if (junctionsArray[junctionNo3].getOccupiedBy().equals(player1)) {
-                        junctionNo = junctionNo3;
-                    }
-                    if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo)) {
-                        player2EatsStone(junctionNo);
-                        ateStone = true;
-                        break;
-                    }
-                }
-
-            } else  if (!junctionsListFormingDualTripletplayer.isEmpty()) {
-
-                // eat a stone which will be part of dual triplet in future
-                for (int i = 0; i < junctionsListFormingDualTripletplayer.size(); i++) {
-                    int junctionNo = junctionsListFormingDualTripletplayer.get(i);
-                    if (!gameUtility.isPartOfTriplet(activeTripletsList, junctionNo)) {
-                        player2EatsStone(junctionNo);
-                        ateStone = true;
-                        break;
-                    }
-                }
-            } else {
-
-                // eat latestPlayer1StoneJunctionNo
-                if (!gameUtility.isPartOfTriplet(activeTripletsList, latestPlayer1StoneJunctionNo)) {
-                    player2EatsStone(latestPlayer1StoneJunctionNo);
-                    ateStone = true;
-                } else {
-
-                    // eat a stone adjacent to junctions where player2 formed a triplet
-                    if (!tripletsAdjacentJunctionNumbersListplayer2.isEmpty()) {
-                        for (int i = 0;
-                             i < tripletsAdjacentJunctionNumbersListplayer2.size(); i++) {
-                            int adjacentJunctionNo =
-                                    tripletsAdjacentJunctionNumbersListplayer2.get(i);
-
-                            // check if it is not vacant and not occupied by player2
-                            if (junctionsArray[adjacentJunctionNo].getOccupiedBy() != null
-                                    && !junctionsArray[adjacentJunctionNo].getOccupiedBy()
-                                    .equals(player2)) {
-                                if (!gameUtility.isPartOfTriplet(activeTripletsList,
-                                        adjacentJunctionNo)) {
-
-                                    player2EatsStone(adjacentJunctionNo);
-                                    ateStone = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (!ateStone) {
-
-                // eat 1st eligible player stone starting from junctionNo 1
-                for (int i = 1; i < junctionsArray.length; i++) {
-                    Junction junction = junctionsArray[i];
-                    if (junction.getOccupiedBy() != null
-                            && junction.getOccupiedBy().equals(player1)) {
-                        if (!gameUtility.isPartOfTriplet(activeTripletsList, i)) {
-                            player2EatsStone(i);
-                            break;
-                        }
-                    }
-                }
-            }
-        } else {
-            player2Health++;
-        }
-    }
-
-    private void player2EatsStone(int junctionNo) {
-        Log.d(TAG, "player2 eats a stone at junction No: " + junctionNo);
-
-        // we are sure that a stone can be eaten from given junctionNo
-        junctionsArray[junctionNo].setOccupiedBy("");
-        player1Health--;
-        playSoundAndVibration(player2);
-    }
 
     private void playerEatsStone() {
+        Log.d(TAG, "playerEatsStone called");
 
-        // if player can eat stone, it's fine. else player1Health will increase
-        if (gameUtility.canEatPlayerStone(junctionsArray,
-                player2, activeTripletsList)) {
-            displayMessage = DisplayMessage.EAT_STONE;
-            gameStatus = GameStatus.EAT_STONE;
-            player1Turn = true;
+        // check which player turn, update game status, display message
+        if (player1Turn) {
+            // if player can eat stone, it's fine. else player1Health will increase
+            if (gameUtility.canEatPlayerStone(junctionsArray,
+                    player2, activeTripletsList)) {
+                displayMessage = DisplayMessage.PLAYER1_EAT_STONE;
+                gameStatus = GameStatus.EAT_STONE;
+            } else {
+                Log.d(TAG, "player1 unable to eat stone, health increased");
+                player1Health++;
+                if (player2StonesLeft > 0) {
+                    displayMessage = getPlayerStoneBalanceMessage(player2);
+                    gameStatus = GameStatus.DRAW_STONE;
+                } else {
+                    displayMessage = DisplayMessage.PLAYER2_PICK_STONE;
+                    gameStatus = GameStatus.PICK_STONE;
+                }
+            }
+
         } else {
-            player1Health++;
+            if (gameUtility.canEatPlayerStone(junctionsArray,
+                    player1, activeTripletsList)) {
+                displayMessage = DisplayMessage.PLAYER2_EAT_STONE;
+                gameStatus = GameStatus.EAT_STONE;
+            } else {
+                Log.d(TAG, "player2 unable to eat stone, health increased");
+                player2Health++;
+                if (player1StonesLeft > 0) {
+                    displayMessage = getPlayerStoneBalanceMessage(player1);
+                    gameStatus = GameStatus.DRAW_STONE;
+                } else {
+                    displayMessage = DisplayMessage.PLAYER1_PICK_STONE;
+                    gameStatus = GameStatus.PICK_STONE;
+                }
+            }
         }
     }
 
@@ -756,30 +684,21 @@ public class PlayerCanvasBoardView extends View {
         gameStatus = GameStatus.DRAW_STONE;
         activeTripletsList = new ArrayList();
 
-        // checking if first move is by player2
-        if (settingsPreferences.getBoolean("fitto_player2_plays_first", true)) {
-            player2Turn = true;
-            displayMessage = getPlayerStoneBalanceMessage(player2);
-        } else {
-            player1Turn = true;
-            displayMessage = getPlayerStoneBalanceMessage(player1);
-        }
+        // first move is always by player2
+        player1Turn = true;
+        displayMessage = getPlayerStoneBalanceMessage(player1);
+
         invalidate();
     }
 
-    private void playSoundAndVibration(String player) {
-        if (player.equals(player1)) {
-            if (gameStatus.equals(GameStatus.EAT_STONE)) {
-                playSound();
-                playVibration(500);
-            } else if (gameStatus.equals(GameStatus.DRAW_STONE)) {
-                playSound();
-            } else if (gameStatus.equals(GameStatus.PLACE_STONE)) {
-                playVibration(100);
-            }
-        } else {
+    private void playSoundAndVibration() {
+        if (gameStatus.equals(GameStatus.EAT_STONE)) {
             playSound();
             playVibration(500);
+        } else if (gameStatus.equals(GameStatus.DRAW_STONE)) {
+            playSound();
+        } else if (gameStatus.equals(GameStatus.PLACE_STONE)) {
+            playVibration(100);
         }
     }
 
