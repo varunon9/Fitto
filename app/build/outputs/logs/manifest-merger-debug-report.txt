@@ -1,76 +1,127 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:2:1-25:12
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-25:12
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-25:12
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-25:12
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-25:12
+MERGED from [com.android.support:preference-v14:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/preference-v14-27.1.1.aar/e052abdb651e4db006c5b0295347e8de/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:preference-v7:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/preference-v7-27.1.1.aar/1da32b7715bb5ae40ca66d70093caaf8/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:design:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/design-27.1.1.aar/70744a522bad6611e5cb99de25bc42ca/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:appcompat-v7:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/7aadcd8b05db9325c9a974e59d20e217/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:animated-vector-drawable:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-27.1.1.aar/c83a6dc071bd58236442bc8afa7681df/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-vector-drawable:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-vector-drawable-27.1.1.aar/e753a2d5e095ef51a0c36c8cffa9c6d6/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-v4:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-v4-27.1.1.aar/78b800a2242a23279a8ae4cad71049a7/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:recyclerview-v7:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/recyclerview-v7-27.1.1.aar/4ab7e0e0e34b31d7a54eda7aa52baa92/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-fragment:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-fragment-27.1.1.aar/7b773d54d3d86982f2eaa92ec295c7dc/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-core-ui:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-core-ui-27.1.1.aar/f507652f520331331a8eb994d180cd19/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-core-utils:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-core-utils-27.1.1.aar/7a268833338b61d22ce3ac42ea4b09e3/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:transition:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/transition-27.1.1.aar/e4f1a9a15b3f29cc64b82b7691227189/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-media-compat:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-media-compat-27.1.1.aar/4e0707929030f63bd4d5e85645871abf/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-compat:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-compat-27.1.1.aar/0ef00ee30d4155e2c5d32df30e1b03c3/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:runtime:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/runtime-1.1.0.aar/77d3d2e71f44fd930bcc22a82dcadf8d/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:livedata-core:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/livedata-core-1.1.0.aar/5b315dde697e03947a8ba608bd3e02e5/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:viewmodel:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/viewmodel-1.1.0.aar/0c6d86f9366be102bb2ac3e79726924a/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.core:runtime:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/runtime-1.1.0.aar/b8a8c6ccc36b43c381e893a680f2bd6f/AndroidManifest.xml:17:1-22:12
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-25:12
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-25:12
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-25:12
 	package
-		ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:3:5-32
-		INJECTED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml
-		INJECTED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:3:5-32
+		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
+		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
 	android:versionName
-		INJECTED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml
-		INJECTED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml
-	xmlns:android
-		ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:2:11-69
+		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-25:12
+		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
 	android:versionCode
-		INJECTED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml
-		INJECTED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml
+		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-25:12
+		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:11-69
 uses-permission#android.permission.VIBRATE
-ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:5:5-65
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:5:5-65
 	android:name
-		ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:5:22-63
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:5:22-63
 application
-ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:6:5-23:19
-MERGED from [com.android.support:design:23.4.0] /home/varun/.android/build-cache/87f078694bb4dc1278eb33a2baf08f208e10239a/output/AndroidManifest.xml:22:5-20
-MERGED from [com.android.support:preference-v14:23.4.0] /home/varun/.android/build-cache/f515943e17ad7046efe9ee8a9afb1ef0d5dec364/output/AndroidManifest.xml:9:5-20
-MERGED from [com.android.support:preference-v7:23.4.0] /home/varun/.android/build-cache/8a5f5973cc152cef1686ad4a2b2c422223fd644f/output/AndroidManifest.xml:9:5-20
-MERGED from [com.android.support:appcompat-v7:23.4.0] /home/varun/.android/build-cache/64755ab34adc489da76630e7c3aa626d2a74f023/output/AndroidManifest.xml:25:5-20
-MERGED from [com.android.support:animated-vector-drawable:23.4.0] /home/varun/.android/build-cache/361246cbbbb984a0924f4ca094c65681a304bafc/output/AndroidManifest.xml:7:5-20
-MERGED from [com.android.support:support-vector-drawable:23.4.0] /home/varun/.android/build-cache/9c3e6563cfce1c407ec4bd65682944e1c63f0ad7/output/AndroidManifest.xml:7:5-20
-MERGED from [com.android.support:support-v4:23.4.0] /home/varun/.android/build-cache/69b6210c5ca464a2b402832a2fd7ae306784a36c/output/AndroidManifest.xml:22:5-20
-	android:label
-		ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:9:9-41
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:6:5-23:19
 	android:supportsRtl
-		ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:10:9-35
-	android:allowBackup
-		ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:7:9-35
-	android:icon
-		ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:8:9-43
-	android:theme
-		ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:11:9-40
-activity#me.varunon9.fitto.MainActivity
-ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:12:9-22:20
-	android:screenOrientation
-		ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:14:13-49
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:10:9-35
 	android:label
-		ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:15:13-45
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:9:9-41
+	android:icon
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:8:9-43
+	android:allowBackup
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:7:9-35
 	android:theme
-		ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:16:13-56
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:11:9-40
+activity#me.varunon9.fitto.MainActivity
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:12:9-22:20
+	android:screenOrientation
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:14:13-49
+	android:label
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:15:13-45
+	android:theme
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:16:13-56
 	android:name
-		ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:13:13-58
-intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
-ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:17:13-21:29
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:13:13-58
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:17:13-21:29
 action#android.intent.action.MAIN
-ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:18:17-69
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:18:17-69
 	android:name
-		ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:18:25-66
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:18:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:20:17-77
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:20:17-77
 	android:name
-		ADDED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml:20:27-74
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:20:27-74
 uses-sdk
-INJECTED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
-MERGED from [com.android.support:design:23.4.0] /home/varun/.android/build-cache/87f078694bb4dc1278eb33a2baf08f208e10239a/output/AndroidManifest.xml:20:5-43
-MERGED from [com.android.support:preference-v14:23.4.0] /home/varun/.android/build-cache/f515943e17ad7046efe9ee8a9afb1ef0d5dec364/output/AndroidManifest.xml:7:5-44
-MERGED from [com.android.support:preference-v7:23.4.0] /home/varun/.android/build-cache/8a5f5973cc152cef1686ad4a2b2c422223fd644f/output/AndroidManifest.xml:7:5-43
-MERGED from [com.android.support:recyclerview-v7:23.4.0] /home/varun/.android/build-cache/897cb1a9511fd0829649eed7a881667482d6d855/output/AndroidManifest.xml:20:5-43
-MERGED from [com.android.support:appcompat-v7:23.4.0] /home/varun/.android/build-cache/64755ab34adc489da76630e7c3aa626d2a74f023/output/AndroidManifest.xml:21:5-23:78
-MERGED from [com.android.support:animated-vector-drawable:23.4.0] /home/varun/.android/build-cache/361246cbbbb984a0924f4ca094c65681a304bafc/output/AndroidManifest.xml:5:5-44
-MERGED from [com.android.support:support-vector-drawable:23.4.0] /home/varun/.android/build-cache/9c3e6563cfce1c407ec4bd65682944e1c63f0ad7/output/AndroidManifest.xml:5:5-43
-MERGED from [com.android.support:support-v4:23.4.0] /home/varun/.android/build-cache/69b6210c5ca464a2b402832a2fd7ae306784a36c/output/AndroidManifest.xml:20:5-43
-	tools:overrideLibrary
-		ADDED from [com.android.support:appcompat-v7:23.4.0] /home/varun/.android/build-cache/64755ab34adc489da76630e7c3aa626d2a74f023/output/AndroidManifest.xml:23:9-75
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
+MERGED from [com.android.support:preference-v14:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/preference-v14-27.1.1.aar/e052abdb651e4db006c5b0295347e8de/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:preference-v14:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/preference-v14-27.1.1.aar/e052abdb651e4db006c5b0295347e8de/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:preference-v7:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/preference-v7-27.1.1.aar/1da32b7715bb5ae40ca66d70093caaf8/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:preference-v7:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/preference-v7-27.1.1.aar/1da32b7715bb5ae40ca66d70093caaf8/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:design:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/design-27.1.1.aar/70744a522bad6611e5cb99de25bc42ca/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:design:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/design-27.1.1.aar/70744a522bad6611e5cb99de25bc42ca/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:appcompat-v7:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/7aadcd8b05db9325c9a974e59d20e217/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:appcompat-v7:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/7aadcd8b05db9325c9a974e59d20e217/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-27.1.1.aar/c83a6dc071bd58236442bc8afa7681df/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-27.1.1.aar/c83a6dc071bd58236442bc8afa7681df/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-vector-drawable-27.1.1.aar/e753a2d5e095ef51a0c36c8cffa9c6d6/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-vector-drawable-27.1.1.aar/e753a2d5e095ef51a0c36c8cffa9c6d6/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v4:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-v4-27.1.1.aar/78b800a2242a23279a8ae4cad71049a7/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v4:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-v4-27.1.1.aar/78b800a2242a23279a8ae4cad71049a7/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:recyclerview-v7:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/recyclerview-v7-27.1.1.aar/4ab7e0e0e34b31d7a54eda7aa52baa92/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:recyclerview-v7:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/recyclerview-v7-27.1.1.aar/4ab7e0e0e34b31d7a54eda7aa52baa92/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-fragment-27.1.1.aar/7b773d54d3d86982f2eaa92ec295c7dc/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-fragment-27.1.1.aar/7b773d54d3d86982f2eaa92ec295c7dc/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-core-ui-27.1.1.aar/f507652f520331331a8eb994d180cd19/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-core-ui-27.1.1.aar/f507652f520331331a8eb994d180cd19/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-core-utils-27.1.1.aar/7a268833338b61d22ce3ac42ea4b09e3/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-core-utils-27.1.1.aar/7a268833338b61d22ce3ac42ea4b09e3/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:transition:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/transition-27.1.1.aar/e4f1a9a15b3f29cc64b82b7691227189/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:transition:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/transition-27.1.1.aar/e4f1a9a15b3f29cc64b82b7691227189/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-media-compat-27.1.1.aar/4e0707929030f63bd4d5e85645871abf/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-media-compat-27.1.1.aar/4e0707929030f63bd4d5e85645871abf/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-compat-27.1.1.aar/0ef00ee30d4155e2c5d32df30e1b03c3/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/support-compat-27.1.1.aar/0ef00ee30d4155e2c5d32df30e1b03c3/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/runtime-1.1.0.aar/77d3d2e71f44fd930bcc22a82dcadf8d/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/runtime-1.1.0.aar/77d3d2e71f44fd930bcc22a82dcadf8d/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/livedata-core-1.1.0.aar/5b315dde697e03947a8ba608bd3e02e5/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/livedata-core-1.1.0.aar/5b315dde697e03947a8ba608bd3e02e5/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/viewmodel-1.1.0.aar/0c6d86f9366be102bb2ac3e79726924a/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/viewmodel-1.1.0.aar/0c6d86f9366be102bb2ac3e79726924a/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/runtime-1.1.0.aar/b8a8c6ccc36b43c381e893a680f2bd6f/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/runtime-1.1.0.aar/b8a8c6ccc36b43c381e893a680f2bd6f/AndroidManifest.xml:20:5-44
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
 	android:targetSdkVersion
-		INJECTED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml
-		INJECTED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml
+		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
+		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml
-		INJECTED from /home/varun/Desktop/Github/Fitto/app/src/main/AndroidManifest.xml
+		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
+		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
