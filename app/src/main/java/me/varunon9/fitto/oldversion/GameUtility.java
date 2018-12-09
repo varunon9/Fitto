@@ -1,4 +1,4 @@
-package me.varunon9.fitto;
+package me.varunon9.fitto.oldversion;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

@@ -1,4 +1,4 @@
-package me.varunon9.fitto;
+package me.varunon9.fitto.oldversion;
 
 /**
  * Created by varun on 25/8/17.

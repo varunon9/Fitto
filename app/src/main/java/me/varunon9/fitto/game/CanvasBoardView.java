@@ -2,7 +2,6 @@ package me.varunon9.fitto.game;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Vibrator;
@@ -13,9 +12,9 @@ import android.view.View;
 
 import java.util.List;
 
-import me.varunon9.fitto.FitTriplet;
+import me.varunon9.fitto.oldversion.FitTriplet;
 import me.varunon9.fitto.R;
-import me.varunon9.fitto.Triplet;
+import me.varunon9.fitto.oldversion.Triplet;
 
 /**
  * Game Board View, will be used for both mode- online as well as vs computer

@@ -58,7 +58,7 @@ MERGED from [com.android.support.constraint:constraint-layout:1.1.3] /home/varun
 		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:8:9-35
 	android:theme
 		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:12:9-40
-activity#me.varunon9.fitto.OldVersionMainActivity
+activity#me.varunon9.fitto.oldversion.OldVersionMainActivity
 ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:13:9-17:59
 	android:screenOrientation
 		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:16:13-49
@@ -67,7 +67,7 @@ ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidMani
 	android:theme
 		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:17:13-56
 	android:name
-		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:14:13-51
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:14:13-62
 activity#me.varunon9.fitto.computer.PlayWithComputerActivity
 ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:18:9-21:59
 	android:label

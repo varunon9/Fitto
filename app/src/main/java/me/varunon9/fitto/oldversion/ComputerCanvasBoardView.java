@@ -1,4 +1,4 @@
-package me.varunon9.fitto;
+package me.varunon9.fitto.oldversion;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,6 +19,8 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import me.varunon9.fitto.R;
 
 /**
  * Created by varun on 20/8/17.

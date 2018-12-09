@@ -1,4 +1,4 @@
-package me.varunon9.fitto;
+package me.varunon9.fitto.oldversion;
 
 
 import android.os.Bundle;
@@ -8,14 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import me.varunon9.fitto.R;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PlayWithPlayerFragment extends Fragment {
+public class PlayWithComputerFragment extends Fragment {
 
 
-    public PlayWithPlayerFragment() {
+    public PlayWithComputerFragment() {
         // Required empty public constructor
     }
 
@@ -24,12 +26,12 @@ public class PlayWithPlayerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_play_with_player, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_play_with_computer, container, false);
         Button restartButton = (Button) rootView.findViewById(R.id.restartButton);
         Button undoButton = (Button) rootView.findViewById(R.id.undoButton);
-        PlayerCanvasBoardView playerCanvasBoardView =
-                (PlayerCanvasBoardView) rootView.findViewById(R.id.playerCanvasBoardView);
-        playerCanvasBoardView.initialiseButtons(restartButton, undoButton);
+        ComputerCanvasBoardView computerCanvasBoardView =
+                (ComputerCanvasBoardView) rootView.findViewById(R.id.computerCanvasBoardView);
+        computerCanvasBoardView.initialiseButtons(restartButton, undoButton);
         return rootView;
     }
 

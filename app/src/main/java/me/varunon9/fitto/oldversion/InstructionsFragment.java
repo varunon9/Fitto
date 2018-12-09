@@ -1,4 +1,4 @@
-package me.varunon9.fitto;
+package me.varunon9.fitto.oldversion;
 
 
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+
+import me.varunon9.fitto.R;
 
 
 /**

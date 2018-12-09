@@ -5,8 +5,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.varunon9.fitto.FitTriplet;
-import me.varunon9.fitto.Triplet;
+import me.varunon9.fitto.oldversion.FitTriplet;
+import me.varunon9.fitto.oldversion.Triplet;
 import me.varunon9.fitto.game.Junction;
 import me.varunon9.fitto.game.Player;
 

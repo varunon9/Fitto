@@ -13,7 +13,7 @@ import android.widget.Button;
 import java.util.ArrayList;
 
 import me.varunon9.fitto.R;
-import me.varunon9.fitto.Triplet;
+import me.varunon9.fitto.oldversion.Triplet;
 import me.varunon9.fitto.game.CanvasBoardView;
 import me.varunon9.fitto.game.GameStatus;
 import me.varunon9.fitto.game.Junction;
