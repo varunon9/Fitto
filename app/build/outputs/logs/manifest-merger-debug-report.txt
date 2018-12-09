@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-30:12
-INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-30:12
-INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-30:12
-INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-30:12
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-45:12
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-45:12
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-45:12
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-45:12
 MERGED from [com.android.support:preference-v14:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/preference-v14-27.1.1.aar/e052abdb651e4db006c5b0295347e8de/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:preference-v7:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/preference-v7-27.1.1.aar/1da32b7715bb5ae40ca66d70093caaf8/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:design:27.1.1] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/design-27.1.1.aar/70744a522bad6611e5cb99de25bc42ca/AndroidManifest.xml:17:1-22:12
@@ -23,20 +23,20 @@ MERGED from [android.arch.lifecycle:runtime:1.1.0] /home/varunkumar/.gradle/cach
 MERGED from [android.arch.lifecycle:livedata-core:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/livedata-core-1.1.0.aar/5b315dde697e03947a8ba608bd3e02e5/AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.lifecycle:viewmodel:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/viewmodel-1.1.0.aar/0c6d86f9366be102bb2ac3e79726924a/AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.core:runtime:1.1.0] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/runtime-1.1.0.aar/b8a8c6ccc36b43c381e893a680f2bd6f/AndroidManifest.xml:17:1-22:12
-INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-30:12
-INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-30:12
-INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-30:12
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-45:12
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-45:12
+INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-45:12
 	package
 		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:3:5-32
 		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
 		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
 	android:versionName
 		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
-		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-30:12
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-45:12
 		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
 	android:versionCode
 		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
-		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-30:12
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:1-45:12
 		INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:2:11-69
@@ -45,7 +45,7 @@ ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidMani
 	android:name
 		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:5:22-63
 application
-ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:7:5-28:19
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:7:5-43:19
 MERGED from [com.android.support.constraint:constraint-layout:1.1.3] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.1.3.aar/3d53f8dd78d608a6adf0d17fc2b7d63b/AndroidManifest.xml:9:5-20
 MERGED from [com.android.support.constraint:constraint-layout:1.1.3] /home/varunkumar/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.1.3.aar/3d53f8dd78d608a6adf0d17fc2b7d63b/AndroidManifest.xml:9:5-20
 	android:supportsRtl
@@ -58,8 +58,8 @@ MERGED from [com.android.support.constraint:constraint-layout:1.1.3] /home/varun
 		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:8:9-35
 	android:theme
 		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:12:9-40
-activity#me.varunon9.fitto.MainActivity
-ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:13:9-23:20
+activity#me.varunon9.fitto.OldVersionMainActivity
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:13:9-17:59
 	android:screenOrientation
 		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:16:13-49
 	android:label
@@ -67,25 +67,53 @@ ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidMani
 	android:theme
 		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:17:13-56
 	android:name
-		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:14:13-41
-intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:18:13-22:29
-action#android.intent.action.MAIN
-ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:19:17-69
-	android:name
-		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:19:25-66
-category#android.intent.category.LAUNCHER
-ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:21:17-77
-	android:name
-		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:21:27-74
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:14:13-51
 activity#me.varunon9.fitto.computer.PlayWithComputerActivity
-ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:24:9-27:68
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:18:9-21:59
 	android:label
-		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:26:13-70
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:20:13-70
 	android:theme
-		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:27:13-56
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:21:13-56
 	android:name
-		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:25:13-62
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:19:13-62
+activity#me.varunon9.fitto.MainActivity
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:22:9-42:20
+	android:label
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:24:13-56
+	android:theme
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:25:13-56
+	android:name
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:23:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:26:13-30:29
+action#android.intent.action.MAIN
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:27:17-69
+	android:name
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:27:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:29:17-77
+	android:name
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:29:27-74
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:app+data:scheme:fitto
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:32:13-41:29
+action#android.intent.action.VIEW
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:33:17-69
+	android:name
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:33:25-66
+category#android.intent.category.DEFAULT
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:34:17-76
+	android:name
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:34:27-73
+category#android.intent.category.BROWSABLE
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:35:17-78
+	android:name
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:35:27-75
+data
+ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:38:17-40:46
+	android:host
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:39:21-39
+	android:scheme
+		ADDED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml:40:21-43
 uses-sdk
 INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/varunkumar/AndroidStudioProjects/Fitto/app/src/main/AndroidManifest.xml

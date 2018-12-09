@@ -81,10 +81,9 @@ public class PlayerCanvasBoardView extends View {
         player2 = typedArray.getString(R.styleable.PlayerCanvasBoardView_player2);
         player2StoneColor = typedArray.getString(R.styleable.PlayerCanvasBoardView_player2StoneColor);
         player1StoneColor = typedArray.getString(R.styleable.PlayerCanvasBoardView_player1StoneColor);
-        maximumInitialStones =
-                typedArray.getInt(R.styleable.ComputerCanvasBoardView_maximumInitialStones, 8);
-        stoneRadius = typedArray.getInt(R.styleable.ComputerCanvasBoardView_stoneRadius, 20);
-        canvasMargin = typedArray.getInt(R.styleable.ComputerCanvasBoardView_margin, 20);
+        maximumInitialStones = 8;
+        stoneRadius = 20;
+        canvasMargin = 20;
         player1StonePaint = new Paint();
         player1StonePaint.setAntiAlias(true);
         player1StonePaint.setDither(true);

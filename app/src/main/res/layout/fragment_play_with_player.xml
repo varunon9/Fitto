@@ -9,22 +9,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginBottom="55dp"
         custom:player1StoneColor="@string/player1_stone_color"
         custom:player2StoneColor="@string/player2_stone_color"
-        custom:margin="20"
-        custom:stoneRadius="20"
         custom:player1="@string/player1"
-        custom:player2="@string/player2"
-        custom:maximumInitialStones="8"/>
+        custom:player2="@string/player2"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
 
         <Button
