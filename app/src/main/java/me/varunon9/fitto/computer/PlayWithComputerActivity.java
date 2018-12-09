@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 
 import me.varunon9.fitto.R;
 
@@ -17,6 +18,11 @@ public class PlayWithComputerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_play_with_computer);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Button restartButton = findViewById(R.id.restartButton);
+        PlayWithComputerCanvasBoardView playWithComputerCanvasBoardView =
+                findViewById(R.id.playWithComputerCanvasBoardView);
+        playWithComputerCanvasBoardView.initialiseButtons(restartButton);
     }
 
 }

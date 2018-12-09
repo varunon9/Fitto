@@ -393,18 +393,11 @@ public class PlayWithComputerCanvasBoardView extends CanvasBoardView {
         }
     }
 
-    public void initialiseButtons(Button restartButton, Button undoButton) {
+    public void initialiseButtons(Button restartButton) {
         restartButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 restartGame();
-            }
-        });
-
-        undoButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //undoMove(); todo
             }
         });
     }

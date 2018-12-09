@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import me.varunon9.fitto.computer.PlayWithComputerActivity;
 import me.varunon9.fitto.oldversion.OldVersionMainActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,7 +24,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void playWithComputer(View view) {
-
+        Intent intent = new Intent(MainActivity.this, PlayWithComputerActivity.class);
+        startActivity(intent);
     }
 
     public void switchToOldVersion(View view) {

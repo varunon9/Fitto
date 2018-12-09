@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:padding="@dimen/activity_vertical_margin"
     tools:context=".computer.PlayWithComputerActivity"
     tools:showIn="@layout/activity_play_with_computer">
 
-</android.support.constraint.ConstraintLayout>
+    <me.varunon9.fitto.computer.PlayWithComputerCanvasBoardView
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/playWithComputerCanvasBoardView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="55dp"
+        custom:player1StoneColor="@string/player1_stone_color"
+        custom:player2StoneColor="@string/player2_stone_color"
+        custom:player1="@string/player1"
+        custom:player2="@string/player2" />
+
+    <Button
+        android:id="@+id/restartButton"
+        android:textAlignment="center"
+        android:text="Restart"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>
