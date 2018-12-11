@@ -37,11 +37,13 @@ public class PlayWithComputerCanvasBoardView extends CanvasBoardView {
     private int draggedStoneXCordinate;
     private int draggedStoneYCordinate;
 
+    private boolean computerPlaysFirst;
+
     public PlayWithComputerCanvasBoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         playerUser = new Player();
-        playerUser.setName("You"); // todo read from Singleton
+        playerUser.setName("You");
 
         Paint playerUserStonePaint = new Paint();
         playerUserStonePaint.setAntiAlias(true);
@@ -53,10 +55,12 @@ public class PlayWithComputerCanvasBoardView extends CanvasBoardView {
 
         playerUser.setStonesLeft(initialStones);
         playerUser.setHealth(initialStones);
-        playerUser.setTurn(false); // computer will play first todo
+
+        // computer will play first by default, can be overridden by setWhoPlaysFirst
+        playerUser.setTurn(false);
 
         playerComputer = new Player();
-        playerComputer.setName("Computer"); // todo read from Singleton
+        playerComputer.setName("Computer");
 
         Paint playerComputerStonePaint = new Paint();
         playerComputerStonePaint.setAntiAlias(true);
@@ -68,7 +72,9 @@ public class PlayWithComputerCanvasBoardView extends CanvasBoardView {
 
         playerComputer.setStonesLeft(initialStones);
         playerComputer.setHealth(initialStones);
-        playerComputer.setTurn(true); // computer will play first todo
+
+        // computer will play first by default, can be overridden by setWhoPlaysFirst
+        playerComputer.setTurn(true);
 
         this.setPlayer1(playerUser);
         this.setPlayer2(playerComputer);
@@ -81,8 +87,8 @@ public class PlayWithComputerCanvasBoardView extends CanvasBoardView {
         Log.d(TAG, "restart called");
 
         winner = null;
-        playerUser.setTurn(false); // todo decide first turn logic
-        playerComputer.setTurn(true);
+        playerUser.setTurn(!computerPlaysFirst);
+        playerComputer.setTurn(computerPlaysFirst);
         playerUser.setStonesLeft(initialStones);
         playerUser.setHealth(initialStones);
         playerComputer.setStonesLeft(initialStones);
@@ -96,10 +102,17 @@ public class PlayWithComputerCanvasBoardView extends CanvasBoardView {
         activeTripletsList = new ArrayList<Triplet>();
         
         if (playerComputer.isTurn()) {
-            computerPlays();
+            computerPlays(); // this method will call invalidate
+        } else {
+            invalidate();
         }
-        
-        invalidate();
+    }
+
+    public void setWhoPlaysFirst(boolean computerPlaysFirst) {
+        this.computerPlaysFirst = computerPlaysFirst;
+
+        playerUser.setTurn(!computerPlaysFirst);
+        playerComputer.setTurn(computerPlaysFirst);
     }
 
     private void drawDraggedStone() {
@@ -112,7 +125,6 @@ public class PlayWithComputerCanvasBoardView extends CanvasBoardView {
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         drawDraggedStone();
-        instructionMessage = null;
 
         if (playerComputer.isTurn()) {
             computerPlays();
@@ -256,6 +268,13 @@ public class PlayWithComputerCanvasBoardView extends CanvasBoardView {
             // todo animate
         }
 
+        // next turn is going to be of user, setting instruction for him
+        if (playerUser.getStonesLeft() > 0) {
+            instructionMessage = "Place a stone";
+        } else {
+            instructionMessage = "Drag your stone to adjacent position.";
+        }
+
         // updating game
         invalidate();
     }
@@ -388,8 +407,10 @@ public class PlayWithComputerCanvasBoardView extends CanvasBoardView {
     private void checkWinner() {
         if (playerUser.getHealth() < 3) {
             winner = playerComputer;
+            instructionMessage = "You tried well!"; // todo not working check
         } else if (playerComputer.getHealth() < 3) {
             winner = playerUser;
+            instructionMessage = "Congrats! Well played."; // todo not working check
         }
     }
 
