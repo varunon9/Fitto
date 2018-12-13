@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1039213674379",
+    "firebase_url": "https://fitto-410d2.firebaseio.com",
+    "project_id": "fitto-410d2",
+    "storage_bucket": "fitto-410d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1039213674379:android:ac3d405d9f306599",
+        "android_client_info": {
+          "package_name": "me.varunon9.fitto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1039213674379-srhirihbdhuccqkn1uvahack134uoehi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "me.varunon9.fitto",
+            "certificate_hash": "50fec39f742f3df212bdc2131a99c7d3c82086f6"
+          }
+        },
+        {
+          "client_id": "1039213674379-tefvn1ch9r2mn8vje8bcb2mvoncfm7ka.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTBfQ3UkMjqeWOFig6m3H8Eo6mSWFeGRk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1039213674379-tefvn1ch9r2mn8vje8bcb2mvoncfm7ka.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
